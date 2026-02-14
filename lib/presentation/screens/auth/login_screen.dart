@@ -16,15 +16,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
-
     return Scaffold(
       body: Stack(
         children: [
           // Background Image
           Positioned.fill(
             child: Image.asset(
-              'assets/login.png',
+              'assets/download.jpg',
               fit: BoxFit.cover,
             ),
           ),
@@ -52,11 +50,22 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Logo
-                  Image.asset(
-                    'assets/icon/icon.png',
-                    height: 80,
-                    width: 80,
+                  // Alternative Branding Icon
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF24DC3D),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF24DC3D).withOpacity(0.3),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(Icons.restaurant_menu,
+                        color: Colors.white, size: 48),
                   ),
                   const SizedBox(height: 16),
                   const Text(

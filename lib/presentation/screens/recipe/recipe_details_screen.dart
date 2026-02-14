@@ -35,9 +35,31 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
     final user = Provider.of<AuthProvider>(context, listen: false).user;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.transparent,
       body: Stack(
         children: [
+          // Background Image
+          Positioned.fill(
+            child: Image.asset(
+              'assets/download.jpg',
+              fit: BoxFit.cover,
+            ),
+          ),
+          // Dark Gradient Overlay
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.7),
+                    Colors.black.withOpacity(0.9),
+                  ],
+                ),
+              ),
+            ),
+          ),
           CustomScrollView(
             slivers: [
               SliverAppBar(
@@ -91,10 +113,12 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
               ),
               SliverToBoxAdapter(
                 child: Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.5),
                     borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(30)),
+                        const BorderRadius.vertical(top: Radius.circular(30)),
+                    border: Border(
+                        top: BorderSide(color: Colors.white.withOpacity(0.1))),
                   ),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
@@ -122,7 +146,9 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
                       Text(
                         widget.recipe.name,
                         style: const TextStyle(
-                            fontSize: 28, fontWeight: FontWeight.bold),
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
                       ),
                       const SizedBox(height: 24),
                       Row(
@@ -139,8 +165,8 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
                       // Tabs
                       TabBar(
                         controller: _tabController,
-                        labelColor: Colors.black,
-                        unselectedLabelColor: Colors.grey,
+                        labelColor: Colors.white,
+                        unselectedLabelColor: Colors.white60,
                         indicatorColor: const Color(0xFF24DC3D),
                         indicatorWeight: 3,
                         indicatorSize: TabBarIndicatorSize.label,
@@ -223,16 +249,19 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
       width: (MediaQuery.of(context).size.width - 72) / 3,
       padding: const EdgeInsets.symmetric(vertical: 16),
       decoration: BoxDecoration(
-        color: const Color(0xFFF9F9F9),
+        color: Colors.white.withOpacity(0.1),
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
       ),
       child: Column(
         children: [
           Icon(icon, color: const Color(0xFF24DC3D), size: 24),
           const SizedBox(height: 8),
           Text(label,
-              style:
-                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: Colors.white)),
         ],
       ),
     );
@@ -246,9 +275,12 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text('Ingredients',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)),
             Text('${widget.recipe.servings} Servings',
-                style: const TextStyle(color: Colors.grey)),
+                style: const TextStyle(color: Colors.white70)),
           ],
         ),
         const SizedBox(height: 16),
@@ -266,12 +298,12 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
                     decoration: BoxDecoration(
                       color: _ingredientChecks[index]
                           ? const Color(0xFF24DC3D)
-                          : Colors.white,
+                          : Colors.transparent,
                       borderRadius: BorderRadius.circular(6),
                       border: Border.all(
                           color: _ingredientChecks[index]
                               ? Colors.transparent
-                              : Colors.grey[300]!),
+                              : Colors.white60),
                     ),
                     child: _ingredientChecks[index]
                         ? const Icon(Icons.check, color: Colors.white, size: 16)
@@ -284,17 +316,19 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
                     widget.recipe.ingredients[index],
                     style: TextStyle(
                       fontSize: 16,
-                      color:
-                          _ingredientChecks[index] ? Colors.grey : Colors.black,
+                      color: _ingredientChecks[index]
+                          ? Colors.white60
+                          : Colors.white,
                       decoration: _ingredientChecks[index]
                           ? TextDecoration.lineThrough
                           : null,
+                      decorationColor: Colors.white,
                     ),
                   ),
                 ),
                 const Text('1 cup',
                     style: TextStyle(
-                        color: Colors.grey, fontWeight: FontWeight.bold)),
+                        color: Colors.white60, fontWeight: FontWeight.bold)),
               ],
             ),
           );
@@ -327,7 +361,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
                             color: Color(0xFF24DC3D))),
                     Text(
                       'Want to know how to pick the perfect avocado for this bowl?',
-                      style: TextStyle(fontSize: 13, color: Colors.grey[800]),
+                      style: TextStyle(fontSize: 13, color: Colors.white70),
                     ),
                   ],
                 ),
@@ -362,7 +396,8 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
                 Expanded(
                   child: Text(
                     widget.recipe.instructions[index],
-                    style: const TextStyle(fontSize: 16, height: 1.5),
+                    style: const TextStyle(
+                        fontSize: 16, height: 1.5, color: Colors.white),
                   ),
                 ),
               ],

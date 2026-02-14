@@ -13,93 +13,203 @@ class ProfileScreen extends StatelessWidget {
     final user = authProvider.user;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Profile'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.red),
-            onPressed: () => authProvider.logout(),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 32),
-            Center(
-              child: Stack(
+      backgroundColor: Colors.transparent,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const CircleAvatar(
-                    radius: 60,
-                    backgroundColor: Colors.deepOrange,
-                    child: Icon(Icons.person, size: 60, color: Colors.white),
+                  const Text('My Profile',
+                      style:
+                          TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+                  IconButton(
+                    icon:
+                        const Icon(Icons.settings_outlined, color: Colors.grey),
+                    onPressed: () {},
                   ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: CircleAvatar(
-                      radius: 18,
-                      backgroundColor: Colors.orange,
-                      child: IconButton(
-                        icon: const Icon(Icons.camera_alt,
-                            size: 18, color: Colors.white),
-                        onPressed: () {},
+                ],
+              ),
+              const SizedBox(height: 32),
+              // User Info Card
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(color: Colors.white.withOpacity(0.2)),
+                ),
+                child: Row(
+                  children: [
+                    const CircleAvatar(
+                      radius: 40,
+                      backgroundColor: Color(0xFFE8F5E9),
+                      child: Icon(Icons.person,
+                          size: 40, color: Color(0xFF24DC3D)),
+                    ),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            user?.displayName ?? 'Chef Explorer',
+                            style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          ),
+                          Text(
+                            user?.email ?? 'chef@mealmate.com',
+                            style: TextStyle(
+                                color: Colors.white.withOpacity(0.7),
+                                fontSize: 14),
+                          ),
+                          const SizedBox(height: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF24DC3D).withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Text(
+                              'GOLD MEMBER',
+                              style: TextStyle(
+                                  color: Color(0xFF24DC3D),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 40),
+              const Text('Stats',
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white)),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _statCard('Recipes', '12'),
+                  _statCard('Following', '120'),
+                  _statCard('Followers', '3.5k'),
                 ],
               ),
-            ),
-            const SizedBox(height: 16),
-            Text(user?.email ?? 'User Email',
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 32),
-            const Divider(),
-            Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Favorite Recipes',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 16),
-                  Consumer<RecipeProvider>(
-                    builder: (context, provider, child) {
-                      if (provider.favorites.isEmpty) {
-                        return const Text('No favorites yet.',
-                            style: TextStyle(color: Colors.grey));
-                      }
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: provider.favorites.length,
-                        itemBuilder: (context, index) {
-                          final recipe = provider.favorites[index];
-                          return ListTile(
-                            leading: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.network(recipe.image,
-                                  width: 50, height: 50, fit: BoxFit.cover),
-                            ),
-                            title: Text(recipe.name),
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) =>
-                                      RecipeDetailsScreen(recipe: recipe)),
-                            ),
-                          );
-                        },
+              const SizedBox(height: 40),
+              const Text('My Favorites',
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white)),
+              const SizedBox(height: 16),
+              Consumer<RecipeProvider>(
+                builder: (context, provider, child) {
+                  if (provider.favorites.isEmpty) {
+                    return Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(32),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                        border:
+                            Border.all(color: Colors.white.withOpacity(0.2)),
+                      ),
+                      child: const Center(
+                        child: Text('No favorites yet. Start explorer!',
+                            style: TextStyle(color: Colors.white70)),
+                      ),
+                    );
+                  }
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: provider.favorites.length,
+                    itemBuilder: (context, index) {
+                      final recipe = provider.favorites[index];
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                                color: Colors.white.withOpacity(0.1))),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.all(12),
+                          leading: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.network(recipe.image,
+                                width: 60, height: 60, fit: BoxFit.cover),
+                          ),
+                          title: Text(recipe.name,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white)),
+                          subtitle: Text(
+                              '${recipe.caloriesPerServing} kcal • ${recipe.difficulty}',
+                              style: TextStyle(
+                                  color: Colors.white.withOpacity(0.7))),
+                          trailing: const Icon(Icons.arrow_forward_ios,
+                              size: 16, color: Colors.white70),
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) =>
+                                    RecipeDetailsScreen(recipe: recipe)),
+                          ),
+                        ),
                       );
                     },
-                  ),
-                ],
+                  );
+                },
               ),
-            ),
-          ],
+              const SizedBox(height: 32),
+              ElevatedButton.icon(
+                onPressed: () => authProvider.logout(),
+                icon: const Icon(Icons.logout),
+                label: const Text('LOGOUT'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red[50],
+                  foregroundColor: Colors.red,
+                ),
+              ),
+              const SizedBox(height: 100),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _statCard(String label, String value) {
+    return Container(
+      width: 100,
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.2)),
+      ),
+      child: Column(
+        children: [
+          Text(value,
+              style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white)),
+          Text(label,
+              style: TextStyle(
+                  fontSize: 12, color: Colors.white.withOpacity(0.7))),
+        ],
       ),
     );
   }

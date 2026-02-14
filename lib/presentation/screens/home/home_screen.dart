@@ -24,6 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -41,26 +42,26 @@ class _HomeScreenState extends State<HomeScreen> {
                       const Text(
                         'Discover',
                         style: TextStyle(
-                            fontSize: 28, fontWeight: FontWeight.bold),
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
                       ),
                       Text(
                         "What's on the menu today?",
-                        style: TextStyle(color: Colors.grey[600], fontSize: 16),
+                        style: TextStyle(
+                            color: Colors.white.withOpacity(0.7), fontSize: 16),
                       ),
                     ],
                   ),
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Colors.white.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 10)
-                      ],
+                      border: Border.all(color: Colors.white.withOpacity(0.2)),
                     ),
-                    child: const Icon(Icons.notifications_none),
+                    child: const Icon(Icons.notifications_none,
+                        color: Colors.white),
                   ),
                 ],
               ),
@@ -71,12 +72,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   Expanded(
                     child: TextField(
                       controller: _searchController,
+                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         hintText: 'Search ingredients...',
+                        hintStyle:
+                            TextStyle(color: Colors.white.withOpacity(0.5)),
                         prefixIcon:
-                            const Icon(Icons.search, color: Colors.grey),
-                        fillColor: Colors.grey[100],
+                            const Icon(Icons.search, color: Colors.white70),
+                        fillColor: Colors.white.withOpacity(0.1),
+                        filled: true,
                         contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: BorderSide.none),
                       ),
                     ),
                   ),
@@ -110,11 +118,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text('Featured Recipes',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white)),
                   Text('View All',
                       style: TextStyle(
-                          color: Colors.green[700],
+                          color: const Color(0xFF24DC3D),
                           fontWeight: FontWeight.bold)),
                 ],
               ),
@@ -143,9 +153,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text('Recommended for You',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  const Icon(Icons.info_outline, color: Colors.grey, size: 20),
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white)),
+                  const Icon(Icons.info_outline,
+                      color: Colors.white70, size: 20),
                 ],
               ),
               const SizedBox(height: 16),
@@ -183,14 +196,18 @@ class _HomeScreenState extends State<HomeScreen> {
       margin: const EdgeInsets.only(right: 12),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFF24DC3D) : Colors.white,
+        color: isSelected
+            ? const Color(0xFF24DC3D)
+            : Colors.white.withOpacity(0.1),
         borderRadius: BorderRadius.circular(25),
-        border: isSelected ? null : Border.all(color: Colors.grey[200]!),
+        border: isSelected
+            ? null
+            : Border.all(color: Colors.white.withOpacity(0.2)),
       ),
       child: Text(
         label,
         style: TextStyle(
-          color: isSelected ? Colors.white : Colors.grey[600],
+          color: isSelected ? Colors.white : Colors.white70,
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -264,14 +281,9 @@ class _HomeScreenState extends State<HomeScreen> {
               builder: (_) => RecipeDetailsScreen(recipe: recipe))),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Colors.white.withOpacity(0.1),
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 5))
-          ],
+          border: Border.all(color: Colors.white.withOpacity(0.1)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -293,9 +305,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     right: 10,
                     child: CircleAvatar(
                       radius: 15,
-                      backgroundColor: Colors.white,
+                      backgroundColor: Colors.black54,
                       child: Icon(Icons.favorite_border,
-                          size: 18, color: Colors.grey),
+                          size: 18, color: Colors.white),
                     ),
                   ),
                 ],
@@ -309,7 +321,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text(
                     recipe.name,
                     style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 14),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: Colors.white),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -320,10 +334,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Color(0xFFFFB300), size: 14),
                       Text(" ${recipe.rating}",
                           style: const TextStyle(
-                              fontSize: 12, fontWeight: FontWeight.bold)),
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white70)),
                       Text(" (${recipe.reviewCount})",
-                          style: const TextStyle(
-                              fontSize: 10, color: Colors.grey)),
+                          style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.white.withOpacity(0.5))),
                     ],
                   ),
                 ],

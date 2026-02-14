@@ -8,7 +8,8 @@ class AppConstants {
   static const String favoritesCollection = 'favorites';
 
   // Assets
-  static const String logoPath = 'assets/icon/icon.png';
+  static const String logoPath =
+      'assets/login.png'; // Using background as temp logo or just keep it empty
   static const String placeholderRecipe =
       'assets/images/placeholder_recipe.png';
 }

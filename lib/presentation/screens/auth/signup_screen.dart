@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:glassmorphism/glassmorphism.dart';
 import '../../providers/auth_provider.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -17,152 +16,189 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
-
     return Scaffold(
       body: Stack(
         children: [
-          // Food Background Image
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/login.png'),
-                fit: BoxFit.cover,
+          // Background Image
+          Positioned.fill(
+            child: Image.asset(
+              'assets/download.jpg',
+              fit: BoxFit.cover,
+            ),
+          ),
+          // Dark Gradient Overlay
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.1),
+                    Colors.black.withOpacity(0.8),
+                  ],
+                ),
               ),
             ),
           ),
-          // Dark Overlay for "Unity"
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.black.withOpacity(0.6),
-                  Colors.black.withOpacity(0.3),
-                ],
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
+          // Back Button
+          Positioned(
+            top: 50,
+            left: 20,
+            child: CircleAvatar(
+              backgroundColor: Colors.white.withOpacity(0.2),
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => Navigator.pop(context),
               ),
             ),
           ),
-          Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: GlassmorphicContainer(
-                width: double.infinity,
-                height: 580,
-                borderRadius: 30,
-                blur: 20,
-                alignment: Alignment.center,
-                border: 2,
-                linearGradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.white.withOpacity(0.2),
-                    Colors.white.withOpacity(0.1),
-                  ],
-                ),
-                borderGradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.white.withOpacity(0.5),
-                    Colors.white.withOpacity(0.2),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(32.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset(
-                        'assets/icon/icon.png',
-                        height: 100,
-                        width: 100,
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'Join MealMate',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+          // Content
+          SafeArea(
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Branding Icon
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF24DC3D),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF24DC3D).withOpacity(0.3),
+                          blurRadius: 15,
                         ),
-                      ),
-                      const SizedBox(height: 32),
-                      TextField(
-                        controller: _nameController,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                          hintText: 'Full Name',
-                          hintStyle:
-                              TextStyle(color: Colors.white.withOpacity(0.7)),
-                          prefixIcon:
-                              const Icon(Icons.person, color: Colors.white),
-                          fillColor: Colors.white.withOpacity(0.2),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: _emailController,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                          hintText: 'Email',
-                          hintStyle:
-                              TextStyle(color: Colors.white.withOpacity(0.7)),
-                          prefixIcon:
-                              const Icon(Icons.email, color: Colors.white),
-                          fillColor: Colors.white.withOpacity(0.2),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: _passwordController,
-                        obscureText: true,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                          hintText: 'Password',
-                          hintStyle:
-                              TextStyle(color: Colors.white.withOpacity(0.7)),
-                          prefixIcon:
-                              const Icon(Icons.lock, color: Colors.white),
-                          fillColor: Colors.white.withOpacity(0.2),
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-                      if (authProvider.isLoading)
-                        const CircularProgressIndicator(color: Colors.white)
-                      else
-                        ElevatedButton(
-                          onPressed: () {
-                            authProvider.signUp(
-                              _emailController.text,
-                              _passwordController.text,
-                              _nameController.text,
-                            );
+                      ],
+                    ),
+                    child: const Icon(Icons.person_add,
+                        color: Colors.white, size: 32),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Join MealMate.',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Create an account to start your personalized culinary journey.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.8),
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  // Form Fields
+                  _buildTextField(
+                    controller: _nameController,
+                    hint: 'Full Name',
+                    icon: Icons.person_outline,
+                  ),
+                  const SizedBox(height: 16),
+                  _buildTextField(
+                    controller: _emailController,
+                    hint: 'Email',
+                    icon: Icons.email_outlined,
+                  ),
+                  const SizedBox(height: 16),
+                  _buildTextField(
+                    controller: _passwordController,
+                    hint: 'Password',
+                    icon: Icons.lock_outline,
+                    isPassword: true,
+                  ),
+                  const SizedBox(height: 32),
+                  // Sign Up Button
+                  Consumer<AuthProvider>(
+                    builder: (context, auth, child) {
+                      if (auth.isLoading) {
+                        return const CircularProgressIndicator(
+                            color: Color(0xFF24DC3D));
+                      }
+                      return ElevatedButton(
+                        onPressed: () async {
+                          final success = await auth.signUp(
+                            _emailController.text,
+                            _passwordController.text,
+                            _nameController.text,
+                          );
+                          if (success && mounted) {
                             Navigator.pop(context);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: Colors.green[800],
-                          ),
-                          child: const Text('CREATE ACCOUNT'),
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF24DC3D),
+                          foregroundColor: Colors.white,
                         ),
+                        child: const Text('CREATE ACCOUNT'),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Already have an account? ',
+                        style: TextStyle(color: Colors.white.withOpacity(0.7)),
+                      ),
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: const Text(
+                          'Log In',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
-                ),
+                ],
               ),
-            ),
-          ),
-          Positioned(
-            top: 40,
-            left: 20,
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () => Navigator.pop(context),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hint,
+    required IconData icon,
+    bool isPassword = false,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.3)),
+      ),
+      child: TextField(
+        controller: controller,
+        obscureText: isPassword,
+        style: const TextStyle(color: Colors.white),
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+          prefixIcon: Icon(icon, color: Colors.white),
+          filled: false,
+          border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(vertical: 18),
+        ),
       ),
     );
   }
