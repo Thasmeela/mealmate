@@ -22,12 +22,25 @@ class _SignupScreenState extends State<SignupScreen> {
     return Scaffold(
       body: Stack(
         children: [
+          // Food Background Image
           Container(
             decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/login.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          // Dark Overlay for "Unity"
+          Container(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFFB2DFDB), Color(0xFF2E7D32)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+                colors: [
+                  Colors.black.withOpacity(0.6),
+                  Colors.black.withOpacity(0.3),
+                ],
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
               ),
             ),
           ),
@@ -62,8 +75,11 @@ class _SignupScreenState extends State<SignupScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.person_add,
-                          size: 64, color: Colors.white),
+                      Image.asset(
+                        'assets/icon/icon.png',
+                        height: 100,
+                        width: 100,
+                      ),
                       const SizedBox(height: 16),
                       const Text(
                         'Join MealMate',

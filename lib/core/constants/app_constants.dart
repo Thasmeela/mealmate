@@ -8,7 +8,7 @@ class AppConstants {
   static const String favoritesCollection = 'favorites';
 
   // Assets
-  static const String logoPath = 'assets/logo.png'; // Assuming exists
+  static const String logoPath = 'assets/icon/icon.png';
   static const String placeholderRecipe =
       'assets/images/placeholder_recipe.png';
 }

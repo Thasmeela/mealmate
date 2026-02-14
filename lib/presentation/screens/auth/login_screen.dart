@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:glassmorphism/glassmorphism.dart';
 import '../../providers/auth_provider.dart';
 import 'signup_screen.dart';
 
@@ -22,125 +21,214 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // Background Image/Gradient
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFFFFE0B2), Color(0xFFFF5722)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+          // Background Image
+          Positioned.fill(
+            child: Image.asset(
+              'assets/login.png',
+              fit: BoxFit.cover,
+            ),
+          ),
+          // Dark Gradient Overlay
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.1),
+                    Colors.black.withOpacity(0.8),
+                  ],
+                ),
               ),
             ),
           ),
           // Content
-          Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: GlassmorphicContainer(
-                width: double.infinity,
-                height: 520,
-                borderRadius: 30,
-                blur: 20,
-                alignment: Alignment.center,
-                border: 2,
-                linearGradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.white.withOpacity(0.2),
-                    Colors.white.withOpacity(0.1),
-                  ],
-                ),
-                borderGradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.white.withOpacity(0.5),
-                    Colors.white.withOpacity(0.2),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(32.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
+          SafeArea(
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Logo
+                  Image.asset(
+                    'assets/icon/icon.png',
+                    height: 80,
+                    width: 80,
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'MealMate.',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Your AI-powered culinary companion for smart recipe discovery.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.8),
+                      fontSize: 18,
+                    ),
+                  ),
+                  const SizedBox(height: 48),
+                  // Buttons
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const SignupScreen()));
+                    },
+                    icon: const Icon(Icons.email, size: 24),
+                    label: const Text('Sign Up with Email'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF24DC3D),
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
                     children: [
-                      const Icon(Icons.restaurant_menu,
-                          size: 64, color: Colors.white),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'MealMate',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                      Expanded(
+                        child: _socialButton(
+                          icon: Icons.apple,
+                          label: 'Apple',
+                          onTap: () {},
                         ),
                       ),
-                      const SizedBox(height: 32),
-                      TextField(
-                        controller: _emailController,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                          hintText: 'Email',
-                          hintStyle:
-                              TextStyle(color: Colors.white.withOpacity(0.7)),
-                          prefixIcon:
-                              const Icon(Icons.email, color: Colors.white),
-                          fillColor: Colors.white.withOpacity(0.2),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: _passwordController,
-                        obscureText: true,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                          hintText: 'Password',
-                          hintStyle:
-                              TextStyle(color: Colors.white.withOpacity(0.7)),
-                          prefixIcon:
-                              const Icon(Icons.lock, color: Colors.white),
-                          fillColor: Colors.white.withOpacity(0.2),
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-                      if (authProvider.isLoading)
-                        const CircularProgressIndicator(color: Colors.white)
-                      else
-                        ElevatedButton(
-                          onPressed: () {
-                            authProvider.login(
-                              _emailController.text,
-                              _passwordController.text,
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: Colors.deepOrange,
-                          ),
-                          child: const Text('LOG IN'),
-                        ),
-                      const SizedBox(height: 16),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const SignupScreen()),
-                          );
-                        },
-                        child: Text(
-                          "Don't have an account? Sign Up",
-                          style:
-                              TextStyle(color: Colors.white.withOpacity(0.9)),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _socialButton(
+                          icon: Icons.g_mobiledata,
+                          label: 'Google',
+                          onTap: () {},
                         ),
                       ),
                     ],
                   ),
-                ),
+                  const SizedBox(height: 32),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Already have an account? ',
+                        style: TextStyle(color: Colors.white.withOpacity(0.7)),
+                      ),
+                      GestureDetector(
+                        onTap: () => _showLoginModal(context),
+                        child: const Text(
+                          'Log In',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _socialButton(
+      {required IconData icon,
+      required String label,
+      required VoidCallback onTap}) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        height: 56,
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.white.withOpacity(0.3)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: Colors.white, size: 28),
+            const SizedBox(width: 8),
+            Text(label,
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showLoginModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 24,
+          right: 24,
+          top: 32,
+        ),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Welcome Back',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 24),
+            TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(
+                hintText: 'Email',
+                prefixIcon: Icon(Icons.email_outlined),
+                fillColor: Color(0xFFF5F5F5),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                hintText: 'Password',
+                prefixIcon: Icon(Icons.lock_outline),
+                fillColor: Color(0xFFF5F5F5),
+              ),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () async {
+                final authProvider =
+                    Provider.of<AuthProvider>(context, listen: false);
+                final success = await authProvider.login(
+                  _emailController.text,
+                  _passwordController.text,
+                );
+                if (success && mounted) {
+                  Navigator.pop(context);
+                }
+              },
+              child: const Text('LOG IN'),
+            ),
+            const SizedBox(height: 32),
+          ],
+        ),
       ),
     );
   }
