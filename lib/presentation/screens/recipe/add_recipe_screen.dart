@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloudinary_public/cloudinary_public.dart';
 import 'dart:io';
 import 'package:provider/provider.dart';
 import '../../../domain/entities/recipe.dart';
@@ -25,16 +25,21 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
   ];
 
   File? _image;
+  bool _isVideo = false;
   bool _isUploading = false;
   double _cookTime = 30;
   double _servings = 4;
   bool _isPublic = true;
 
-  Future<void> _pickImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+  Future<void> _pickMedia() async {
+    final pickedFile = await ImagePicker().pickMedia();
     if (pickedFile != null) {
-      setState(() => _image = File(pickedFile.path));
+      setState(() {
+        _image = File(pickedFile.path);
+        _isVideo = pickedFile.path.toLowerCase().endsWith('.mp4') ||
+            pickedFile.path.toLowerCase().endsWith('.mov') ||
+            pickedFile.path.toLowerCase().endsWith('.avi');
+      });
     }
   }
 
@@ -45,14 +50,28 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
 
   Future<String?> _uploadImage(String userId) async {
     if (_image == null) return null;
-    final ref = FirebaseStorage.instance
-        .ref()
-        .child('recipes')
-        .child(userId)
-        .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
 
-    await ref.putFile(_image!);
-    return await ref.getDownloadURL();
+    // Replace with your Cloudinary credentials
+    // You can find these in your Cloudinary Dashboard
+    const String cloudName = 'dox0wqg6h';
+    const String uploadPreset = 'mealmate_preset';
+
+    final cloudinary = CloudinaryPublic(cloudName, uploadPreset, cache: false);
+
+    try {
+      CloudinaryResponse response = await cloudinary.uploadFile(
+        CloudinaryFile.fromFile(_image!.path,
+            resourceType: CloudinaryResourceType.Auto),
+      );
+      return response.secureUrl;
+    } on CloudinaryException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Upload failed: ${e.message}')),
+        );
+      }
+      return null;
+    }
   }
 
   void _saveRecipe() async {
@@ -154,7 +173,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                 children: [
                   // Image Upload Area
                   GestureDetector(
-                    onTap: _pickImage,
+                    onTap: _pickMedia,
                     child: Container(
                       height: 180,
                       width: double.infinity,
@@ -163,7 +182,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                         borderRadius: BorderRadius.circular(25),
                         border:
                             Border.all(color: Colors.white.withOpacity(0.1)),
-                        image: _image != null
+                        image: _image != null && !_isVideo
                             ? DecorationImage(
                                 image: FileImage(_image!), fit: BoxFit.cover)
                             : null,
@@ -188,7 +207,21 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                                         color: Colors.grey, fontSize: 10)),
                               ],
                             )
-                          : null,
+                          : _isVideo
+                              ? Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: const [
+                                      Icon(Icons.videocam,
+                                          color: Colors.white, size: 48),
+                                      SizedBox(height: 8),
+                                      Text('Video Selected',
+                                          style:
+                                              TextStyle(color: Colors.white)),
+                                    ],
+                                  ),
+                                )
+                              : null,
                     ),
                   ),
                   const SizedBox(height: 32),

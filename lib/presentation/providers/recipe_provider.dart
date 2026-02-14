@@ -51,6 +51,25 @@ class RecipeProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> filterRecipesByTag(String tag) async {
+    _setLoading(true);
+    _error = null;
+    try {
+      if (tag == 'All Recipes') {
+        await fetchPublicRecipes();
+      } else {
+        // Map UI tags to DummyJson tags if needed, or use exact match
+        // Example: 'Vegan' -> 'vegan', 'Keto' -> 'keto' (dummyjson tags are usually lowercase)
+        _publicRecipes =
+            await _remoteDataSource.getRecipesByTag(tag.toLowerCase());
+      }
+      _setLoading(false);
+    } catch (e) {
+      _error = e.toString();
+      _setLoading(false);
+    }
+  }
+
   Future<void> fetchUserRecipes(String userId) async {
     try {
       _userRecipes = await _localDataSource.getUserRecipes(userId);

@@ -91,20 +91,6 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 40),
-              const Text('Stats',
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white)),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _statCard('Recipes', '12'),
-                  _statCard('Following', '120'),
-                  _statCard('Followers', '3.5k'),
-                ],
-              ),
               const SizedBox(height: 40),
               const Text('My Favorites',
                   style: TextStyle(
@@ -186,30 +172,6 @@ class ProfileScreen extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _statCard(String label, String value) {
-    return Container(
-      width: 100,
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.2)),
-      ),
-      child: Column(
-        children: [
-          Text(value,
-              style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white)),
-          Text(label,
-              style: TextStyle(
-                  fontSize: 12, color: Colors.white.withOpacity(0.7))),
-        ],
       ),
     );
   }

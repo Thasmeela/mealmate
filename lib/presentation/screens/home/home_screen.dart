@@ -13,6 +13,15 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
+  String _selectedCategory = 'All Recipes';
+  final List<String> _categories = [
+    'All Recipes',
+    'Pizza',
+    'Pasta',
+    'Burgers',
+    'Dessert',
+    'Salad'
+  ];
 
   @override
   void initState() {
@@ -73,6 +82,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: TextField(
                       controller: _searchController,
                       style: const TextStyle(color: Colors.white),
+                      onSubmitted: (value) {
+                        if (value.isNotEmpty) {
+                          Provider.of<RecipeProvider>(context, listen: false)
+                              .searchRecipes(value);
+                        } else {
+                          Provider.of<RecipeProvider>(context, listen: false)
+                              .fetchPublicRecipes();
+                        }
+                      },
                       decoration: InputDecoration(
                         hintText: 'Search ingredients...',
                         hintStyle:
@@ -104,12 +122,19 @@ class _HomeScreenState extends State<HomeScreen> {
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: [
-                    _categoryChip('All Recipes', true),
-                    _categoryChip('Vegan', false),
-                    _categoryChip('Keto', false),
-                    _categoryChip('Under 30 min', false),
-                  ],
+                  children: _categories.map((category) {
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedCategory = category;
+                        });
+                        Provider.of<RecipeProvider>(context, listen: false)
+                            .filterRecipesByTag(category);
+                      },
+                      child: _categoryChip(
+                          category, _selectedCategory == category),
+                    );
+                  }).toList(),
                 ),
               ),
               const SizedBox(height: 32),

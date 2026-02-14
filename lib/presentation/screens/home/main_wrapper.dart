@@ -33,15 +33,16 @@ class _MainWrapperState extends State<MainWrapper> {
     const HomeScreen(),
     const CommunityRecipesScreen(),
     const AIAssistantScreen(),
-    const Scaffold(
-        body: Center(
-            child: Text(
-                'Saved Recipes (Coming Soon)'))), // Placeholder for "Saved"
     const ProfileScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
+    // Ensure index is valid after removing tabs
+    if (_selectedIndex >= _screens.length) {
+      _selectedIndex = 0;
+    }
+
     return Stack(
       children: [
         // Background Image
@@ -118,11 +119,6 @@ class _MainWrapperState extends State<MainWrapper> {
                     child: const Icon(Icons.auto_awesome, color: Colors.white),
                   ),
                   label: '',
-                ),
-                const BottomNavigationBarItem(
-                  icon: Icon(Icons.bookmark_border),
-                  activeIcon: Icon(Icons.bookmark),
-                  label: 'Saved',
                 ),
                 const BottomNavigationBarItem(
                   icon: Icon(Icons.person_outline),

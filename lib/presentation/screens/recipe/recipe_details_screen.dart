@@ -18,15 +18,13 @@ class RecipeDetailsScreen extends StatefulWidget {
 class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final List<bool> _ingredientChecks = [];
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    for (var _ in widget.recipe.ingredients) {
-      _ingredientChecks.add(false);
-    }
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
@@ -289,40 +287,21 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Row(
               children: [
-                GestureDetector(
-                  onTap: () => setState(() =>
-                      _ingredientChecks[index] = !_ingredientChecks[index]),
-                  child: Container(
-                    width: 24,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      color: _ingredientChecks[index]
-                          ? const Color(0xFF24DC3D)
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(
-                          color: _ingredientChecks[index]
-                              ? Colors.transparent
-                              : Colors.white60),
-                    ),
-                    child: _ingredientChecks[index]
-                        ? const Icon(Icons.check, color: Colors.white, size: 16)
-                        : null,
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF24DC3D),
+                    shape: BoxShape.circle,
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Text(
                     widget.recipe.ingredients[index],
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
-                      color: _ingredientChecks[index]
-                          ? Colors.white60
-                          : Colors.white,
-                      decoration: _ingredientChecks[index]
-                          ? TextDecoration.lineThrough
-                          : null,
-                      decorationColor: Colors.white,
+                      color: Colors.white,
                     ),
                   ),
                 ),
