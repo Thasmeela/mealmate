@@ -63,20 +63,10 @@ class _SignupScreenState extends State<SignupScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   // Branding Icon
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF24DC3D),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF24DC3D).withOpacity(0.3),
-                          blurRadius: 15,
-                        ),
-                      ],
-                    ),
-                    child: const Icon(Icons.person_add,
-                        color: Colors.white, size: 32),
+                  Hero(
+                    tag: 'app_logo',
+                    child: Image.asset('assets/mealmate.png',
+                        height: 160, width: 160),
                   ),
                   const SizedBox(height: 16),
                   const Text(

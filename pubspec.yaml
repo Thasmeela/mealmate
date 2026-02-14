@@ -76,6 +76,7 @@ flutter:
   assets:
     - assets/login.png
     - assets/download.jpg
+    - assets/mealmate.png
 
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

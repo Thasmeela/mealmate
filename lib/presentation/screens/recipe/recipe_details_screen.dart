@@ -315,11 +315,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
           ),
           child: Row(
             children: [
-              const CircleAvatar(
-                backgroundColor: Color(0xFF24DC3D),
-                radius: 18,
-                child: Icon(Icons.volume_up, color: Colors.white, size: 18),
-              ),
+              Image.asset('assets/mealmate.png', height: 90, width: 90),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(

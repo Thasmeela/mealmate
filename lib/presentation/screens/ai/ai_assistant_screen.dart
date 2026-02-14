@@ -147,11 +147,7 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const CircleAvatar(
-          backgroundColor: Color(0xFF24DC3D),
-          radius: 18,
-          child: Icon(Icons.auto_awesome, color: Colors.white, size: 18),
-        ),
+        Image.asset('assets/mealmate.png', height: 90, width: 90),
         const SizedBox(width: 12),
         Expanded(
           child: Container(

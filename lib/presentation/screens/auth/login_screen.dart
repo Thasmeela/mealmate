@@ -60,33 +60,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           children: [
                             const Spacer(), // Use Spacer to push content down if there is space
                             // Alternative Branding Icon
-                            Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF24DC3D),
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(0xFF24DC3D)
-                                        .withOpacity(0.3),
-                                    blurRadius: 20,
-                                    offset: const Offset(0, 10),
-                                  ),
-                                ],
-                              ),
-                              child: const Icon(Icons.restaurant_menu,
-                                  color: Colors.white, size: 48),
+                            Hero(
+                              tag: 'app_logo',
+                              child: Image.asset('assets/mealmate.png',
+                                  height: 250, width: 250),
                             ),
-                            const SizedBox(height: 16),
-                            const Text(
-                              'MealMate.',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 40,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
+                           
+                           
                             Text(
                               'Your AI-powered culinary companion for smart recipe discovery.',
                               textAlign: TextAlign.center,
