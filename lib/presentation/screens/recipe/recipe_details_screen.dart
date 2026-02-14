@@ -23,8 +23,15 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
@@ -177,17 +184,10 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
                         ],
                       ),
                       const SizedBox(height: 24),
-                      // Tab Content
-                      SizedBox(
-                        height: _calculateContentHeight(),
-                        child: TabBarView(
-                          controller: _tabController,
-                          children: [
-                            _ingredientsList(),
-                            _stepsList(),
-                          ],
-                        ),
-                      ),
+                      // Tab Content - Render directly based on index to avoid height issues in Slivers
+                      _tabController.index == 0
+                          ? _ingredientsList()
+                          : _stepsList(),
                       const SizedBox(height: 100), // Space for button
                     ],
                   ),
@@ -232,14 +232,6 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
         ],
       ),
     );
-  }
-
-  double _calculateContentHeight() {
-    // Basic heuristic to prevent overflow in TabBarView
-    int count = _tabController.index == 0
-        ? widget.recipe.ingredients.length
-        : widget.recipe.instructions.length;
-    return (count * 60).toDouble() + 100;
   }
 
   Widget _infoCard(IconData icon, String label) {

@@ -16,15 +16,30 @@ class MainWrapper extends StatefulWidget {
 
 class _MainWrapperState extends State<MainWrapper> {
   @override
+  @override
   void initState() {
     super.initState();
-    final user = Provider.of<AuthProvider>(context, listen: false).user;
-    if (user != null) {
-      Provider.of<RecipeProvider>(context, listen: false)
-          .listenToFavorites(user.uid);
-      Provider.of<RecipeProvider>(context, listen: false)
-          .fetchUserRecipes(user.uid);
-    }
+    _setupListeners();
+  }
+
+  void _setupListeners() {
+    Future.microtask(() {
+      final user = Provider.of<AuthProvider>(context, listen: false).user;
+      if (user != null) {
+        final recipeProvider =
+            Provider.of<RecipeProvider>(context, listen: false);
+        // Assuming listenToFavorites handles potential re-subscriptions gracefully
+        // or check if already listening if possible.
+        recipeProvider.listenToFavorites(user.uid);
+        recipeProvider.fetchUserRecipes(user.uid);
+      }
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _setupListeners();
   }
 
   int _selectedIndex = 0;

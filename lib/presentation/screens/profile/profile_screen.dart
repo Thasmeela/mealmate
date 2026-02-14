@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/recipe_provider.dart';
 import '../recipe/recipe_details_screen.dart';
+import 'favorites_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -92,11 +93,28 @@ class ProfileScreen extends StatelessWidget {
               ),
               const SizedBox(height: 40),
               const SizedBox(height: 40),
-              const Text('My Favorites',
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('My Favorites',
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white)),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const FavoritesScreen()));
+                    },
+                    child: const Text('See All',
+                        style: TextStyle(
+                            color: Color(0xFF24DC3D),
+                            fontWeight: FontWeight.bold)),
+                  ),
+                ],
+              ),
               const SizedBox(height: 16),
               Consumer<RecipeProvider>(
                 builder: (context, provider, child) {
