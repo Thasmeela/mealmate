@@ -24,6 +24,8 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
   final List<TextEditingController> _stepsControllers = [
     TextEditingController()
   ];
+  final _cuisineController = TextEditingController(text: 'International');
+  final _caloriesController = TextEditingController(text: '350');
   final CloudinaryService _cloudinaryService = CloudinaryService();
 
   File? _imageFile;
@@ -93,8 +95,10 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
         cookTimeMinutes: _cookTime.toInt(),
         servings: _servings.toInt(),
         difficulty: 'Medium',
-        cuisine: 'Various',
-        caloriesPerServing: 350,
+        cuisine: _cuisineController.text.isNotEmpty
+            ? _cuisineController.text
+            : 'Various',
+        caloriesPerServing: int.tryParse(_caloriesController.text) ?? 350,
         tags: ['User Created'],
         userId: user.uid,
         image: imageUrl ??
@@ -243,9 +247,65 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                             TextStyle(color: Colors.white.withOpacity(0.5)),
                         filled: true,
                         fillColor: Colors.white.withOpacity(0.1)),
-                    validator: (v) => v!.isEmpty ? 'Field required' : null,
+                    validator: (v) =>
+                        (v == null || v.isEmpty) ? 'Name required' : null,
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('CUISINE',
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white70)),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _cuisineController,
+                              style: const TextStyle(color: Colors.white),
+                              decoration: InputDecoration(
+                                  hintText: 'e.g. Italian',
+                                  filled: true,
+                                  fillColor: Colors.white.withOpacity(0.1)),
+                              validator: (v) =>
+                                  (v == null || v.isEmpty) ? 'Required' : null,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('CALORIES',
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white70)),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _caloriesController,
+                              style: const TextStyle(color: Colors.white),
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                  hintText: 'e.g. 450',
+                                  filled: true,
+                                  fillColor: Colors.white.withOpacity(0.1)),
+                              validator: (v) =>
+                                  (v == null || int.tryParse(v) == null)
+                                      ? 'Invalid'
+                                      : null,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
                   Row(
                     children: [
                       Expanded(
@@ -322,6 +382,10 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                                             _ingredientsControllers[index],
                                         style: const TextStyle(
                                             color: Colors.white),
+                                        validator: (v) =>
+                                            (v == null || v.trim().isEmpty)
+                                                ? 'Item required'
+                                                : null,
                                         decoration: InputDecoration(
                                             hintText: 'e.g. 2 cups flour',
                                             hintStyle: TextStyle(
@@ -376,6 +440,10 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                                         maxLines: 2,
                                         style: const TextStyle(
                                             color: Colors.white),
+                                        validator: (v) =>
+                                            (v == null || v.trim().isEmpty)
+                                                ? 'Step required'
+                                                : null,
                                         decoration: InputDecoration(
                                             hintText: 'Describe this step...',
                                             hintStyle: TextStyle(
