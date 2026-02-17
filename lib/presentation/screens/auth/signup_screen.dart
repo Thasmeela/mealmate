@@ -120,12 +120,27 @@ class _SignupScreenState extends State<SignupScreen> {
                           return ElevatedButton(
                             onPressed: () async {
                               final success = await auth.signUp(
-                                _emailController.text,
+                                _emailController.text.trim(),
                                 _passwordController.text,
-                                _nameController.text,
+                                _nameController.text.trim(),
                               );
                               if (success && mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                        'Account created! Welcome to MealMate.'),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
                                 Navigator.pop(context);
+                              } else if (!success) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(auth.error ??
+                                        'Signup Failed. Please try again.'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
                               }
                             },
                             style: ElevatedButton.styleFrom(

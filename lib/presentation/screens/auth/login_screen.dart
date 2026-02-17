@@ -64,8 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: Image.asset('assets/mealmate.png',
                                   height: 250, width: 250),
                             ),
-                           
-                           
+
                             Text(
                               'Your AI-powered culinary companion for smart recipe discovery.',
                               textAlign: TextAlign.center,
@@ -184,64 +183,142 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _showLoginModal(BuildContext context) {
+    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-          left: 24,
-          right: 24,
-          top: 32,
-        ),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'Welcome Back',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      builder: (modalContext) => Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 500),
+          child: Container(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(modalContext).viewInsets.bottom,
+              left: 24,
+              right: 24,
+              top: 16,
             ),
-            const SizedBox(height: 24),
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(
-                hintText: 'Email',
-                prefixIcon: Icon(Icons.email_outlined),
-                fillColor: Color(0xFFF5F5F5),
+            decoration: const BoxDecoration(
+              color: Color(0xFF1E2125),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
+            ),
+            child: Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        margin: const EdgeInsets.only(bottom: 32),
+                        decoration: BoxDecoration(
+                          color: Colors.white24,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                    const Text(
+                      'Welcome Back',
+                      style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Login to continue your culinary journey',
+                      style: TextStyle(color: Colors.white.withOpacity(0.7)),
+                    ),
+                    const SizedBox(height: 40),
+                    TextFormField(
+                      controller: _emailController,
+                      style: const TextStyle(color: Colors.white),
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: InputDecoration(
+                        hintText: 'Email Address',
+                        prefixIcon: const Icon(Icons.email_outlined,
+                            color: Colors.white70),
+                        fillColor: Colors.white.withOpacity(0.05),
+                        filled: true,
+                      ),
+                      validator: (v) => (v == null || !v.contains('@'))
+                          ? 'Invalid email'
+                          : null,
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: _passwordController,
+                      obscureText: true,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        hintText: 'Password',
+                        prefixIcon: const Icon(Icons.lock_outline,
+                            color: Colors.white70),
+                        fillColor: Colors.white.withOpacity(0.05),
+                        filled: true,
+                      ),
+                      validator: (v) =>
+                          (v == null || v.length < 6) ? 'Too short' : null,
+                    ),
+                    const SizedBox(height: 40),
+                    Consumer<AuthProvider>(
+                      builder: (context, auth, child) {
+                        return ElevatedButton(
+                          onPressed: auth.isLoading
+                              ? null
+                              : () async {
+                                  if (_formKey.currentState!.validate()) {
+                                    final success = await auth.login(
+                                      _emailController.text.trim(),
+                                      _passwordController.text,
+                                    );
+                                    if (success) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                              'Login Successful! Welcome back.'),
+                                          backgroundColor: Colors.green,
+                                        ),
+                                      );
+                                      Navigator.pop(modalContext);
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text(auth.error ??
+                                              'Login Failed. Please try again.'),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                    }
+                                  }
+                                },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF24DC3D),
+                            minimumSize: const Size(double.infinity, 60),
+                          ),
+                          child: auth.isLoading
+                              ? const SizedBox(
+                                  height: 24,
+                                  width: 24,
+                                  child: CircularProgressIndicator(
+                                      color: Colors.white, strokeWidth: 2),
+                                )
+                              : const Text('LOGIN'),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 40),
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                hintText: 'Password',
-                prefixIcon: Icon(Icons.lock_outline),
-                fillColor: Color(0xFFF5F5F5),
-              ),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () async {
-                final authProvider =
-                    Provider.of<AuthProvider>(context, listen: false);
-                final success = await authProvider.login(
-                  _emailController.text,
-                  _passwordController.text,
-                );
-                if (success && mounted) {
-                  Navigator.pop(context);
-                }
-              },
-              child: const Text('LOG IN'),
-            ),
-            const SizedBox(height: 32),
-          ],
+          ),
         ),
       ),
     );
