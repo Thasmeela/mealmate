@@ -35,181 +35,199 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 24),
-              // Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 800),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  const SizedBox(height: 24),
+                  // Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Discover',
-                        style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Discover',
+                            style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          ),
+                          Text(
+                            "What's on the menu today?",
+                            style: TextStyle(
+                                color: Colors.white.withOpacity(0.7),
+                                fontSize: 16),
+                          ),
+                        ],
                       ),
-                      Text(
-                        "What's on the menu today?",
-                        style: TextStyle(
-                            color: Colors.white.withOpacity(0.7), fontSize: 16),
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border:
+                              Border.all(color: Colors.white.withOpacity(0.2)),
+                        ),
+                        child: const Icon(Icons.notifications_none,
+                            color: Colors.white),
                       ),
                     ],
                   ),
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.white.withOpacity(0.2)),
-                    ),
-                    child: const Icon(Icons.notifications_none,
-                        color: Colors.white),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              // Search Bar
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _searchController,
-                      style: const TextStyle(color: Colors.white),
-                      onSubmitted: (value) {
-                        if (value.isNotEmpty) {
-                          Provider.of<RecipeProvider>(context, listen: false)
-                              .searchRecipes(value);
-                        } else {
-                          Provider.of<RecipeProvider>(context, listen: false)
-                              .fetchPublicRecipes();
-                        }
-                      },
-                      decoration: InputDecoration(
-                        hintText: 'Search ingredients...',
-                        hintStyle:
-                            TextStyle(color: Colors.white.withOpacity(0.5)),
-                        prefixIcon:
-                            const Icon(Icons.search, color: Colors.white70),
-                        fillColor: Colors.white.withOpacity(0.1),
-                        filled: true,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 0),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
-                            borderSide: BorderSide.none),
+                  const SizedBox(height: 24),
+                  // Search Bar
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _searchController,
+                          style: const TextStyle(color: Colors.white),
+                          onSubmitted: (value) {
+                            if (value.isNotEmpty) {
+                              Provider.of<RecipeProvider>(context,
+                                      listen: false)
+                                  .searchRecipes(value);
+                            } else {
+                              Provider.of<RecipeProvider>(context,
+                                      listen: false)
+                                  .fetchPublicRecipes();
+                            }
+                          },
+                          decoration: InputDecoration(
+                            hintText: 'Search ingredients...',
+                            hintStyle:
+                                TextStyle(color: Colors.white.withOpacity(0.5)),
+                            prefixIcon:
+                                const Icon(Icons.search, color: Colors.white70),
+                            fillColor: Colors.white.withOpacity(0.1),
+                            filled: true,
+                            contentPadding:
+                                const EdgeInsets.symmetric(vertical: 0),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: BorderSide.none),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF24DC3D),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: const Icon(Icons.tune, color: Colors.white),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              // Categories
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: _categories.map((category) {
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _selectedCategory = category;
-                        });
-                        Provider.of<RecipeProvider>(context, listen: false)
-                            .filterRecipesByTag(category);
-                      },
-                      child: _categoryChip(
-                          category, _selectedCategory == category),
-                    );
-                  }).toList(),
-                ),
-              ),
-              const SizedBox(height: 32),
-              // Featured Recipes
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Featured Recipes',
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white)),
-                  Text('View All',
-                      style: TextStyle(
+                      const SizedBox(width: 12),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
                           color: const Color(0xFF24DC3D),
-                          fontWeight: FontWeight.bold)),
-                ],
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                height: 200,
-                child: Consumer<RecipeProvider>(
-                  builder: (context, provider, child) {
-                    if (provider.isLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    final featured = provider.publicRecipes.take(5).toList();
-                    return ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: featured.length,
-                      itemBuilder: (context, index) {
-                        return _featuredCard(featured[index]);
-                      },
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 32),
-              // Recommended
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Recommended for You',
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white)),
-                  const Icon(Icons.info_outline,
-                      color: Colors.white70, size: 20),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Consumer<RecipeProvider>(
-                builder: (context, provider, child) {
-                  if (provider.isLoading) return const SizedBox();
-                  final recommended = provider.publicRecipes.skip(5).toList();
-                  return GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.75,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: const Icon(Icons.tune, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  // Categories
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: _categories.map((category) {
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedCategory = category;
+                            });
+                            Provider.of<RecipeProvider>(context, listen: false)
+                                .filterRecipesByTag(category);
+                          },
+                          child: _categoryChip(
+                              category, _selectedCategory == category),
+                        );
+                      }).toList(),
                     ),
-                    itemCount: recommended.length,
-                    itemBuilder: (context, index) {
-                      return _recommendedCard(recommended[index]);
+                  ),
+                  const SizedBox(height: 32),
+                  // Featured Recipes
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Featured Recipes',
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white)),
+                      Text('View All',
+                          style: TextStyle(
+                              color: const Color(0xFF24DC3D),
+                              fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    height: 220,
+                    child: Consumer<RecipeProvider>(
+                      builder: (context, provider, child) {
+                        if (provider.isLoading) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        final featured =
+                            provider.publicRecipes.take(5).toList();
+                        return ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: featured.length,
+                          itemBuilder: (context, index) {
+                            return _featuredCard(featured[index]);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  // Recommended
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Recommended for You',
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white)),
+                      const Icon(Icons.info_outline,
+                          color: Colors.white70, size: 20),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final crossAxisCount = constraints.maxWidth > 600 ? 3 : 2;
+                      return Consumer<RecipeProvider>(
+                        builder: (context, provider, child) {
+                          if (provider.isLoading) return const SizedBox();
+                          final recommended =
+                              provider.publicRecipes.skip(5).toList();
+                          return GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: crossAxisCount,
+                              childAspectRatio: 0.75,
+                              crossAxisSpacing: 16,
+                              mainAxisSpacing: 16,
+                            ),
+                            itemCount: recommended.length,
+                            itemBuilder: (context, index) {
+                              return _recommendedCard(recommended[index]);
+                            },
+                          );
+                        },
+                      );
                     },
-                  );
-                },
+                  ),
+                  const SizedBox(height: 100), // Bottom nav space
+                ],
               ),
-              const SizedBox(height: 100), // Bottom nav space
-            ],
+            ),
           ),
         ),
       ),

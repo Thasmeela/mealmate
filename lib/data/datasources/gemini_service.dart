@@ -23,10 +23,10 @@ class GeminiService {
 
   Future<String> generateRecipeFromIngredients(List<String> ingredients) async {
     final prompt =
-        "Generate a simple healthy recipe using these ingredients: ${ingredients.join(', ')}. Include title, ingredients, and steps.";
+        "Generate a healthy recipe using these ingredients: ${ingredients.join(', ')}. Return ONLY a JSON object with these fields: name (string), ingredients (list of strings), instructions (list of strings), caloriesPerServing (int), prepTimeMinutes (int), cookTimeMinutes (int), difficulty (string), cuisine (string). Do not allow markdown formatting in the response.";
     final content = [Content.text(prompt)];
     final response = await _model.generateContent(content);
-    return response.text ?? "Sorry, I couldn't generate a recipe right now.";
+    return response.text ?? "{}";
   }
 
   Future<String> suggestHealthyAlternatives(

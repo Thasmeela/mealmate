@@ -32,6 +32,8 @@ class _MainWrapperState extends State<MainWrapper> {
         // or check if already listening if possible.
         recipeProvider.listenToFavorites(user.uid);
         recipeProvider.fetchUserRecipes(user.uid);
+        recipeProvider.fetchAllUserRecipes();
+        recipeProvider.fetchPublicRecipes();
       }
     });
   }

@@ -58,8 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            const Spacer(), // Use Spacer to push content down if there is space
-                            // Alternative Branding Icon
+                            const Spacer(),
                             Hero(
                               tag: 'app_logo',
                               child: Image.asset('assets/mealmate.png',

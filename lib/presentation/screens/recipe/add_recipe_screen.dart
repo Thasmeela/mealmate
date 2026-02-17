@@ -1,11 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:cloudinary_public/cloudinary_public.dart';
 import 'dart:io';
 import 'package:provider/provider.dart';
 import '../../../domain/entities/recipe.dart';
 import '../../providers/recipe_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../../data/datasources/cloudinary_service.dart';
 
 class AddRecipeScreen extends StatefulWidget {
   const AddRecipeScreen({super.key});
@@ -23,8 +24,10 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
   final List<TextEditingController> _stepsControllers = [
     TextEditingController()
   ];
+  final CloudinaryService _cloudinaryService = CloudinaryService();
 
-  File? _image;
+  File? _imageFile;
+  Uint8List? _imageBytes;
   bool _isVideo = false;
   bool _isUploading = false;
   double _cookTime = 30;
@@ -32,14 +35,23 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
   bool _isPublic = true;
 
   Future<void> _pickMedia() async {
-    final pickedFile = await ImagePicker().pickMedia();
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-        _isVideo = pickedFile.path.toLowerCase().endsWith('.mp4') ||
-            pickedFile.path.toLowerCase().endsWith('.mov') ||
-            pickedFile.path.toLowerCase().endsWith('.avi');
-      });
+      if (kIsWeb) {
+        final bytes = await pickedFile.readAsBytes();
+        setState(() {
+          _imageBytes = bytes;
+          _isVideo = false; // Simplified for now
+        });
+      } else {
+        setState(() {
+          _imageFile = File(pickedFile.path);
+          _isVideo = pickedFile.path.toLowerCase().endsWith('.mp4') ||
+              pickedFile.path.toLowerCase().endsWith('.mov') ||
+              pickedFile.path.toLowerCase().endsWith('.avi');
+        });
+      }
     }
   }
 
@@ -48,29 +60,13 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
   void _addStep() =>
       setState(() => _stepsControllers.add(TextEditingController()));
 
-  Future<String?> _uploadImage(String userId) async {
-    if (_image == null) return null;
-
-    // Replace with your Cloudinary credentials
-    // You can find these in your Cloudinary Dashboard
-    const String cloudName = 'dox0wqg6h';
-    const String uploadPreset = 'mealmate_preset';
-
-    final cloudinary = CloudinaryPublic(cloudName, uploadPreset, cache: false);
-
-    try {
-      CloudinaryResponse response = await cloudinary.uploadFile(
-        CloudinaryFile.fromFile(_image!.path,
-            resourceType: CloudinaryResourceType.Auto),
-      );
-      return response.secureUrl;
-    } on CloudinaryException catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Upload failed: ${e.message}')),
-        );
-      }
-      return null;
+  Future<String?> _uploadImage() async {
+    if (kIsWeb) {
+      if (_imageBytes == null) return null;
+      return await _cloudinaryService.uploadImage(_imageBytes);
+    } else {
+      if (_imageFile == null) return null;
+      return await _cloudinaryService.uploadImage(_imageFile);
     }
   }
 
@@ -80,7 +76,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
       final user = Provider.of<AuthProvider>(context, listen: false).user;
       if (user == null) return;
 
-      final imageUrl = await _uploadImage(user.uid);
+      final imageUrl = await _uploadImage();
 
       final newRecipe = Recipe(
         id: DateTime.now().millisecondsSinceEpoch,
@@ -182,12 +178,18 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                         borderRadius: BorderRadius.circular(25),
                         border:
                             Border.all(color: Colors.white.withOpacity(0.1)),
-                        image: _image != null && !_isVideo
+                        image: (kIsWeb
+                                    ? _imageBytes != null
+                                    : _imageFile != null) &&
+                                !_isVideo
                             ? DecorationImage(
-                                image: FileImage(_image!), fit: BoxFit.cover)
+                                image: (kIsWeb
+                                    ? MemoryImage(_imageBytes!)
+                                    : FileImage(_imageFile!)) as ImageProvider,
+                                fit: BoxFit.cover)
                             : null,
                       ),
-                      child: _image == null
+                      child: (kIsWeb ? _imageBytes == null : _imageFile == null)
                           ? Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: const [

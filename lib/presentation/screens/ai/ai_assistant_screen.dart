@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/ai_provider.dart';
+import '../../../domain/entities/recipe.dart';
+import '../recipe/recipe_details_screen.dart';
 
 class AIAssistantScreen extends StatefulWidget {
   const AIAssistantScreen({super.key});
@@ -45,100 +47,110 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
               onPressed: () {}),
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(24),
-              children: [
-                // AI Hello
-                _aiBubble(
-                    "Hi! I'm your healthy cooking assistant. Tell me what ingredients you have in your fridge, and I'll generate a nutritious recipe for you!"),
-                const SizedBox(height: 24),
-                // User input bubbles
-                if (_ingredients.isNotEmpty)
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: _ingredients
-                          .map((ing) => _ingredientChip(ing))
-                          .toList(),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 800),
+          child: Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.all(24),
+                  children: [
+                    // AI Hello
+                    _aiBubble(
+                        "Hi! I'm your healthy cooking assistant. Tell me what ingredients you have in your fridge, and I'll generate a nutritious recipe for you!"),
+                    const SizedBox(height: 24),
+                    // User input bubbles
+                    if (_ingredients.isNotEmpty)
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: _ingredients
+                              .map((ing) => _ingredientChip(ing))
+                              .toList(),
+                        ),
+                      ),
+                    const SizedBox(height: 24),
+                    // AI Response Card
+                    Consumer<AIProvider>(
+                      builder: (context, ai, child) {
+                        if (ai.isLoading) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        if (ai.generatedRecipe != null) {
+                          return _richRecipeCard(ai.generatedRecipe!);
+                        }
+                        if (ai.aiResponse.isNotEmpty) {
+                          return _aiBubble(ai.aiResponse);
+                        }
+                        return const SizedBox();
+                      },
                     ),
-                  ),
-                const SizedBox(height: 24),
-                // AI Response Card (Mocking the rich structure from reference)
-                Consumer<AIProvider>(
-                  builder: (context, ai, child) {
-                    if (ai.isLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (ai.aiResponse.isNotEmpty) {
-                      return _richRecipeCard(ai.aiResponse);
-                    }
-                    return const SizedBox();
-                  },
+                  ],
                 ),
-              ],
-            ),
-          ),
-          // Input Area
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(30)),
-              border:
-                  Border(top: BorderSide(color: Colors.white.withOpacity(0.1))),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      hintText: 'Enter ingredients (e.g., Tomato, Egg...)',
-                      hintStyle:
-                          TextStyle(color: Colors.white.withOpacity(0.5)),
-                      fillColor: Colors.white.withOpacity(0.1),
-                      filled: true,
-                      prefixIcon:
-                          const Icon(Icons.info_outline, color: Colors.white70),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: BorderSide.none,
+              ),
+              // Input Area
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.1),
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(30)),
+                  border: Border(
+                      top: BorderSide(color: Colors.white.withOpacity(0.1))),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _controller,
+                        style: const TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                          hintText: 'Enter ingredients (e.g., Tomato, Egg...)',
+                          hintStyle:
+                              TextStyle(color: Colors.white.withOpacity(0.5)),
+                          fillColor: Colors.white.withOpacity(0.1),
+                          filled: true,
+                          prefixIcon: const Icon(Icons.info_outline,
+                              color: Colors.white70),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        onSubmitted: (_) => _addIngredient(),
                       ),
                     ),
-                    onSubmitted: (_) => _addIngredient(),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                GestureDetector(
-                  onTap: () {
-                    if (_ingredients.isNotEmpty) {
-                      Provider.of<AIProvider>(context, listen: false)
-                          .generateRecipe(_ingredients);
-                    } else {
-                      _addIngredient();
-                    }
-                  },
-                  child: Container(
-                    height: 56,
-                    width: 56,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF24DC3D),
-                      shape: BoxShape.circle,
+                    const SizedBox(width: 12),
+                    GestureDetector(
+                      onTap: () {
+                        if (_ingredients.isNotEmpty) {
+                          Provider.of<AIProvider>(context, listen: false)
+                              .generateRecipe(_ingredients);
+                        } else {
+                          _addIngredient();
+                        }
+                      },
+                      child: Container(
+                        height: 56,
+                        width: 56,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF24DC3D),
+                          shape: BoxShape.circle,
+                        ),
+                        child:
+                            const Icon(Icons.auto_awesome, color: Colors.white),
+                      ),
                     ),
-                    child: const Icon(Icons.auto_awesome, color: Colors.white),
-                  ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -184,8 +196,7 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
     );
   }
 
-  Widget _richRecipeCard(String response) {
-    // This mocks the rich card shown in the reference image
+  Widget _richRecipeCard(Recipe recipe) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.1),
@@ -198,10 +209,15 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
             child: Image.network(
-              'https://images.unsplash.com/photo-1525351484163-7529414344d8?q=80&w=1000&auto=format&fit=crop',
+              recipe.image,
               height: 180,
               width: double.infinity,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Container(
+                height: 180,
+                color: Colors.grey[800],
+                child: const Icon(Icons.broken_image, color: Colors.white),
+              ),
             ),
           ),
           Padding(
@@ -212,9 +228,9 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Expanded(
-                      child: Text('Mediterranean Protein Scramble',
-                          style: TextStyle(
+                    Expanded(
+                      child: Text(recipe.name,
+                          style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                               color: Colors.white)),
@@ -224,15 +240,24 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
                       decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8)),
-                      child: const Icon(Icons.history_toggle_off,
-                          size: 16, color: Colors.white70),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.timer,
+                              size: 16, color: Colors.white70),
+                          const SizedBox(width: 4),
+                          Text(
+                              "${recipe.prepTimeMinutes + recipe.cookTimeMinutes} min",
+                              style: const TextStyle(
+                                  fontSize: 12, color: Colors.white70)),
+                        ],
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                    'A low-carb, high-protein breakfast to start your day.',
-                    style: TextStyle(color: Colors.white70, fontSize: 13)),
+                Text('${recipe.cuisine} • ${recipe.difficulty}',
+                    style:
+                        const TextStyle(color: Colors.white70, fontSize: 13)),
                 const SizedBox(height: 16),
                 Container(
                   padding: const EdgeInsets.all(12),
@@ -248,54 +273,34 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
                           style: TextStyle(
                               fontSize: 12, fontWeight: FontWeight.bold)),
                       const Spacer(),
-                      const Text('320 kcal',
-                          style: TextStyle(
+                      Text('${recipe.caloriesPerServing} kcal',
+                          style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                               color: Colors.green)),
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
-                const Text('HEALTHY SWAPS',
-                    style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green)),
-                const SizedBox(height: 12),
-                _swapRow('Cheddar Cheese', 'Feta Crumbs (-40 cal)'),
-                _swapRow('Butter', 'Avocado Oil (-60 cal)'),
                 const SizedBox(height: 24),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            RecipeDetailsScreen(recipe: recipe),
+                      ),
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF24DC3D),
+                      foregroundColor: Colors.white,
                       minimumSize: const Size(double.infinity, 50)),
-                  child: const Text('Full Recipe Details'),
+                  child: const Text('View Full Recipe'),
                 ),
               ],
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _swapRow(String bad, String good) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Row(
-        children: [
-          Text(bad,
-              style: const TextStyle(color: Colors.white70, fontSize: 13)),
-          const SizedBox(width: 12),
-          const Icon(Icons.arrow_forward_rounded,
-              size: 14, color: Colors.green),
-          const SizedBox(width: 12),
-          Text(good,
-              style: const TextStyle(
-                  color: Colors.green,
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold)),
         ],
       ),
     );

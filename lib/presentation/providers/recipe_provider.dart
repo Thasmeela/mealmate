@@ -13,12 +13,14 @@ class RecipeProvider extends ChangeNotifier {
 
   List<Recipe> _publicRecipes = [];
   List<Recipe> _userRecipes = [];
+  List<Recipe> _allUserRecipes = [];
   List<Recipe> _favorites = [];
   bool _isLoading = false;
   String? _error;
 
   List<Recipe> get publicRecipes => _publicRecipes;
   List<Recipe> get userRecipes => _userRecipes;
+  List<Recipe> get allUserRecipes => _allUserRecipes;
   List<Recipe> get favorites => _favorites;
   bool get isLoading => _isLoading;
   String? get error => _error;
@@ -79,9 +81,21 @@ class RecipeProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> fetchAllUserRecipes() async {
+    _setLoading(true);
+    try {
+      _allUserRecipes = await _localDataSource.getAllUserRecipes();
+      _setLoading(false);
+    } catch (e) {
+      _error = e.toString();
+      _setLoading(false);
+    }
+  }
+
   Future<void> addUserRecipe(Recipe recipe) async {
     await _localDataSource.addUserRecipe(recipe);
     await fetchUserRecipes(recipe.userId);
+    await fetchAllUserRecipes();
   }
 
   Future<void> toggleFavorite(String userId, Recipe recipe) async {

@@ -22,7 +22,19 @@ class RecipeLocalDataSource {
 
     return snapshot.docs.map((doc) {
       final data = doc.data();
-      // Ensure we have an ID for Firestore docs
+      data['id_str'] = doc.id;
+      return Recipe.fromJson(data);
+    }).toList();
+  }
+
+  Future<List<Recipe>> getAllUserRecipes() async {
+    final snapshot = await firestore
+        .collection(AppConstants.recipesCollection)
+        .where('isUserGenerated', isEqualTo: true)
+        .get();
+
+    return snapshot.docs.map((doc) {
+      final data = doc.data();
       data['id_str'] = doc.id;
       return Recipe.fromJson(data);
     }).toList();

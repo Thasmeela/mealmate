@@ -117,79 +117,86 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
                 ),
               ),
               SliverToBoxAdapter(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.5),
-                    borderRadius:
-                        const BorderRadius.vertical(top: Radius.circular(30)),
-                    border: Border(
-                        top: BorderSide(color: Colors.white.withOpacity(0.1))),
-                  ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFE8F5E9),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          'HEALTHY CHOICE',
-                          style: TextStyle(
-                            color: Colors.green[700],
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1,
-                          ),
-                        ),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 800),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.5),
+                        borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(30)),
+                        border: Border(
+                            top: BorderSide(
+                                color: Colors.white.withOpacity(0.1))),
                       ),
-                      const SizedBox(height: 16),
-                      Text(
-                        widget.recipe.name,
-                        style: const TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
-                      ),
-                      const SizedBox(height: 24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 32),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _infoCard(Icons.local_fire_department,
-                              '${widget.recipe.caloriesPerServing} kcal'),
-                          _infoCard(Icons.timer,
-                              '${widget.recipe.prepTimeMinutes + widget.recipe.cookTimeMinutes} min'),
-                          _infoCard(Icons.bar_chart, widget.recipe.difficulty),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE8F5E9),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              'HEALTHY CHOICE',
+                              style: TextStyle(
+                                color: Colors.green[700],
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            widget.recipe.name,
+                            style: const TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          ),
+                          const SizedBox(height: 24),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              _infoCard(Icons.local_fire_department,
+                                  '${widget.recipe.caloriesPerServing} kcal'),
+                              _infoCard(Icons.timer,
+                                  '${widget.recipe.prepTimeMinutes + widget.recipe.cookTimeMinutes} min'),
+                              _infoCard(
+                                  Icons.bar_chart, widget.recipe.difficulty),
+                            ],
+                          ),
+                          const SizedBox(height: 32),
+                          // Tabs
+                          TabBar(
+                            controller: _tabController,
+                            labelColor: Colors.white,
+                            unselectedLabelColor: Colors.white60,
+                            indicatorColor: const Color(0xFF24DC3D),
+                            indicatorWeight: 3,
+                            indicatorSize: TabBarIndicatorSize.label,
+                            dividerColor: Colors.transparent,
+                            labelStyle: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 16),
+                            tabs: const [
+                              Tab(text: 'Ingredients'),
+                              Tab(text: 'Steps'),
+                            ],
+                          ),
+                          const SizedBox(height: 24),
+                          // Tab Content - Render directly based on index to avoid height issues in Slivers
+                          _tabController.index == 0
+                              ? _ingredientsList()
+                              : _stepsList(),
+                          const SizedBox(height: 100), // Space for button
                         ],
                       ),
-                      const SizedBox(height: 32),
-                      // Tabs
-                      TabBar(
-                        controller: _tabController,
-                        labelColor: Colors.white,
-                        unselectedLabelColor: Colors.white60,
-                        indicatorColor: const Color(0xFF24DC3D),
-                        indicatorWeight: 3,
-                        indicatorSize: TabBarIndicatorSize.label,
-                        dividerColor: Colors.transparent,
-                        labelStyle: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
-                        tabs: const [
-                          Tab(text: 'Ingredients'),
-                          Tab(text: 'Steps'),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-                      // Tab Content - Render directly based on index to avoid height issues in Slivers
-                      _tabController.index == 0
-                          ? _ingredientsList()
-                          : _stepsList(),
-                      const SizedBox(height: 100), // Space for button
-                    ],
+                    ),
                   ),
                 ),
               ),
