@@ -71,7 +71,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         // Branding Icon
                         Hero(
                           tag: 'app_logo',
-                          child: Image.asset('assets/mealmate.png',
+                          child: Image.asset('assets/icon/MealMate.png',
                               height: 160, width: 160),
                         ),
                         const SizedBox(height: 16),

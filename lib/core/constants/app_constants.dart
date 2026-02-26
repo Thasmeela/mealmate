@@ -9,7 +9,7 @@ class AppConstants {
 
   // Assets
   static const String logoPath =
-      'assets/login.png'; // Using background as temp logo or just keep it empty
+      'assets/icon/MealMate.png'; // Using background as temp logo or just keep it empty
   static const String placeholderRecipe =
       'assets/images/placeholder_recipe.png';
 }

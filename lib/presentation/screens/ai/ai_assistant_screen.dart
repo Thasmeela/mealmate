@@ -159,7 +159,7 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Image.asset('assets/mealmate.png', height: 90, width: 90),
+        Image.asset('assets/icon/MealMate.png', height: 90, width: 90),
         const SizedBox(width: 12),
         Expanded(
           child: Container(

@@ -322,7 +322,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
           ),
           child: Row(
             children: [
-              Image.asset('assets/mealmate.png', height: 90, width: 90),
+              Image.asset('assets/icon/MealMate.png', height: 90, width: 90),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(

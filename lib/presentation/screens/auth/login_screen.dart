@@ -61,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             const Spacer(),
                             Hero(
                               tag: 'app_logo',
-                              child: Image.asset('assets/mealmate.png',
+                              child: Image.asset('assets/icon/MealMate.png',
                                   height: 250, width: 250),
                             ),
 
