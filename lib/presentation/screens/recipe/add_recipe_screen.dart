@@ -118,7 +118,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
         leadingWidth: 80,
         leading: TextButton(
@@ -140,31 +140,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          // Background Image
-          Positioned.fill(
-            child: Image.asset(
-              'assets/download.jpg',
-              fit: BoxFit.cover,
-            ),
-          ),
-          // Dark Gradient Overlay
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withOpacity(0.7),
-                    Colors.black.withOpacity(0.9),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          SingleChildScrollView(
+      body: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Form(
               key: _formKey,
@@ -508,8 +484,6 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
               ),
             ),
           ),
-        ],
-      ),
     );
   }
 }

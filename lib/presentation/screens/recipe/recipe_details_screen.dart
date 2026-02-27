@@ -40,31 +40,9 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
     final user = Provider.of<AuthProvider>(context, listen: false).user;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: const Color(0xFF121212),
       body: Stack(
         children: [
-          // Background Image
-          Positioned.fill(
-            child: Image.asset(
-              'assets/download.jpg',
-              fit: BoxFit.cover,
-            ),
-          ),
-          // Dark Gradient Overlay
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withOpacity(0.7),
-                    Colors.black.withOpacity(0.9),
-                  ],
-                ),
-              ),
-            ),
-          ),
           CustomScrollView(
             slivers: [
               SliverAppBar(

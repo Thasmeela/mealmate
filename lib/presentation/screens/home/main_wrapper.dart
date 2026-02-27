@@ -60,34 +60,10 @@ class _MainWrapperState extends State<MainWrapper> {
       _selectedIndex = 0;
     }
 
-    return Stack(
-      children: [
-        // Background Image
-        Positioned.fill(
-          child: Image.asset(
-            'assets/download.jpg',
-            fit: BoxFit.cover,
-          ),
-        ),
-        // Dark Gradient Overlay
-        Positioned.fill(
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.black.withOpacity(0.4),
-                  Colors.black.withOpacity(0.8),
-                ],
-              ),
-            ),
-          ),
-        ),
-        Scaffold(
-          backgroundColor: Colors.transparent,
-          body: _screens[_selectedIndex],
-          bottomNavigationBar: Container(
+    return Scaffold(
+      backgroundColor: const Color(0xFF121212),
+      body: _screens[_selectedIndex],
+      bottomNavigationBar: Container(
             decoration: BoxDecoration(
               color: Colors.white,
               boxShadow: [
@@ -146,7 +122,6 @@ class _MainWrapperState extends State<MainWrapper> {
             ),
           ),
         ),
-      ],
     );
   }
 }

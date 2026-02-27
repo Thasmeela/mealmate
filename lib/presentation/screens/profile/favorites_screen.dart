@@ -9,32 +9,8 @@ class FavoritesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Stack(
-        children: [
-          // Background Image
-          Positioned.fill(
-            child: Image.asset(
-              'assets/download.jpg',
-              fit: BoxFit.cover,
-            ),
-          ),
-          // Dark Gradient Overlay
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withOpacity(0.7),
-                    Colors.black.withOpacity(0.9),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          SafeArea(
+      backgroundColor: const Color(0xFF121212),
+      body: SafeArea(
             child: Column(
               children: [
                 Padding(
@@ -171,8 +147,6 @@ class FavoritesScreen extends StatelessWidget {
               ],
             ),
           ),
-        ],
-      ),
     );
   }
 }
