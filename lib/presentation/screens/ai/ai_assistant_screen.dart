@@ -75,8 +75,16 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
                       ),
                       actions: [
                         IconButton(
-                            icon: const Icon(Icons.history, color: Colors.white70),
-                            onPressed: () {}),
+                            icon: const Icon(Icons.refresh, color: Colors.white70),
+                            onPressed: () {
+                              Provider.of<AIProvider>(context, listen: false).clearResponse();
+                              setState(() {
+                                _ingredients.clear();
+                              });
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("Chat cleared")),
+                              );
+                            }),
                       ],
                     ),
                     Expanded(

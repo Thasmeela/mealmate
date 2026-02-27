@@ -32,8 +32,12 @@ class ProfileScreen extends StatelessWidget {
                               fontSize: 28, fontWeight: FontWeight.bold)),
                       IconButton(
                         icon: const Icon(Icons.settings_outlined,
-                            color: Colors.grey),
-                        onPressed: () {},
+                            color: Colors.white),
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Settings coming soon!")),
+                          );
+                        },
                       ),
                     ],
                   ),

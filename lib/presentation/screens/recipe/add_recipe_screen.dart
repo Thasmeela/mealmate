@@ -102,6 +102,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
         tags: ['User Created'],
         userId: user.uid,
         image: imageUrl ??
+            (kIsWeb ? "" : _imageFile?.path) ??
             'https://images.unsplash.com/photo-1546069901-ba9599a7e63c',
         rating: 4.5,
         reviewCount: 0,

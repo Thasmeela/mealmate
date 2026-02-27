@@ -60,10 +60,13 @@ class RecipeProvider extends ChangeNotifier {
       if (tag == 'All Recipes') {
         await fetchPublicRecipes();
       } else {
-        // Map UI tags to DummyJson tags if needed, or use exact match
-        // Example: 'Vegan' -> 'vegan', 'Keto' -> 'keto' (dummyjson tags are usually lowercase)
-        _publicRecipes =
-            await _remoteDataSource.getRecipesByTag(tag.toLowerCase());
+        final recipes = await _remoteDataSource.getRecipesByTag(tag.toLowerCase());
+        if (recipes.isEmpty) {
+          // Fallback to search if tag returns nothing (Common for specific foods like 'Burgers')
+          _publicRecipes = await _remoteDataSource.searchRecipes(tag);
+        } else {
+          _publicRecipes = recipes;
+        }
       }
       _setLoading(false);
     } catch (e) {

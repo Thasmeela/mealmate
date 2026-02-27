@@ -4,9 +4,26 @@ import 'package:provider/provider.dart';
 import '../../providers/recipe_provider.dart';
 import '../recipe/add_recipe_screen.dart';
 import '../recipe/recipe_details_screen.dart';
+import '../../widgets/recipe_image.dart';
 
-class CommunityRecipesScreen extends StatelessWidget {
+class CommunityRecipesScreen extends StatefulWidget {
   const CommunityRecipesScreen({super.key});
+
+  @override
+  State<CommunityRecipesScreen> createState() => _CommunityRecipesScreenState();
+}
+
+class _CommunityRecipesScreenState extends State<CommunityRecipesScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      final provider = Provider.of<RecipeProvider>(context, listen: false);
+      if (provider.allUserRecipes.isEmpty) {
+        provider.fetchAllUserRecipes();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,11 +37,6 @@ class CommunityRecipesScreen extends StatelessWidget {
           constraints: const BoxConstraints(maxWidth: 800),
           child: Consumer<RecipeProvider>(
             builder: (context, provider, child) {
-              if (provider.allUserRecipes.isEmpty && !provider.isLoading) {
-                // If empty and not loading, try fetching
-                Future.microtask(() => provider.fetchAllUserRecipes());
-              }
-
               if (provider.isLoading) {
                 return const Center(child: CircularProgressIndicator());
               }
@@ -57,15 +69,12 @@ class CommunityRecipesScreen extends StatelessWidget {
                     child: ListTile(
                       leading: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: recipe.image.startsWith('http')
-                            ? Image.network(recipe.image,
-                                width: 60, height: 60, fit: BoxFit.cover)
-                            : Container(
-                                width: 60,
-                                height: 60,
-                                color: Colors.white.withOpacity(0.2),
-                                child: const Icon(Icons.image,
-                                    color: Colors.white)),
+                        child: RecipeImage(
+                          imageUrl: recipe.image,
+                          width: 60,
+                          height: 60,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                       title: Text(recipe.name,
                           style: const TextStyle(
@@ -90,10 +99,17 @@ class CommunityRecipesScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const AddRecipeScreen()),
-        ),
+        onPressed: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const AddRecipeScreen()),
+          );
+          // Refresh after adding
+          if (mounted) {
+            Provider.of<RecipeProvider>(context, listen: false)
+                .fetchAllUserRecipes();
+          }
+        },
         label: const Text('Add Recipe'),
         icon: const Icon(Icons.add),
       ),

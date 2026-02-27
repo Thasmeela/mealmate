@@ -3,9 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../providers/recipe_provider.dart';
 import '../recipe/recipe_details_screen.dart';
+import '../recipe/community_recipes_screen.dart';
+import '../../widgets/recipe_image.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final VoidCallback? onMenuTap;
+  const HomeScreen({super.key, this.onMenuTap});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -48,6 +51,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          if (widget.onMenuTap != null) {
+                            widget.onMenuTap!();
+                          } else {
+                            Scaffold.of(context).openDrawer();
+                          }
+                        },
+                        icon: const Icon(Icons.menu, color: Colors.white),
+                      ),
+                      const SizedBox(width: 8),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -66,16 +82,25 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ],
                       ),
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                          border:
-                              Border.all(color: Colors.white.withOpacity(0.2)),
+                    ],
+                  ),
+                      IconButton(
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("No new notifications")),
+                          );
+                        },
+                        icon: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                                color: Colors.white.withOpacity(0.2)),
+                          ),
+                          child: const Icon(Icons.notifications_none,
+                              color: Colors.white),
                         ),
-                        child: const Icon(Icons.notifications_none,
-                            color: Colors.white),
                       ),
                     ],
                   ),
@@ -115,13 +140,20 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF24DC3D),
-                          borderRadius: BorderRadius.circular(15),
+                      GestureDetector(
+                        onTap: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Filters coming soon!")),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF24DC3D),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: const Icon(Icons.tune, color: Colors.white),
                         ),
-                        child: const Icon(Icons.tune, color: Colors.white),
                       ),
                     ],
                   ),
@@ -155,10 +187,21 @@ class _HomeScreenState extends State<HomeScreen> {
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: Colors.white)),
-                      Text('View All',
-                          style: TextStyle(
-                              color: const Color(0xFF24DC3D),
-                              fontWeight: FontWeight.bold)),
+                      GestureDetector(
+                        onTap: () {
+                          // View All leads to Community Recipes / Browse
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const CommunityRecipesScreen(),
+                            ),
+                          );
+                        },
+                        child: Text('View All',
+                            style: TextStyle(
+                                color: const Color(0xFF24DC3D),
+                                fontWeight: FontWeight.bold)),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -203,8 +246,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       return Consumer<RecipeProvider>(
                         builder: (context, provider, child) {
                           if (provider.isLoading) return const SizedBox();
-                          final recommended =
-                              provider.publicRecipes.skip(5).toList();
+                          final recommended = provider.publicRecipes.length > 5
+                              ? provider.publicRecipes.skip(5).toList()
+                              : provider.publicRecipes;
                           return GridView.builder(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
@@ -268,46 +312,51 @@ class _HomeScreenState extends State<HomeScreen> {
         margin: const EdgeInsets.only(right: 16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(25),
-          image: DecorationImage(
-            image: CachedNetworkImageProvider(recipe.image),
-            fit: BoxFit.cover,
-          ),
         ),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(25),
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
-            ),
-          ),
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.start,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(25),
+          child: Stack(
             children: [
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                    color: const Color(0xFF24DC3D),
-                    borderRadius: BorderRadius.circular(8)),
-                child: const Text("CHEF'S CHOICE",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold)),
+              Positioned.fill(
+                child: RecipeImage(imageUrl: recipe.image),
               ),
-              const SizedBox(height: 8),
-              Text(
-                recipe.name,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
+                  ),
+                ),
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                          color: const Color(0xFF24DC3D),
+                          borderRadius: BorderRadius.circular(8)),
+                      child: const Text("CHEF'S CHOICE",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold)),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      recipe.name,
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -337,10 +386,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   ClipRRect(
                     borderRadius:
                         const BorderRadius.vertical(top: Radius.circular(20)),
-                    child: CachedNetworkImage(
+                    child: RecipeImage(
                       imageUrl: recipe.image,
                       width: double.infinity,
-                      fit: BoxFit.cover,
                     ),
                   ),
                   const Positioned(

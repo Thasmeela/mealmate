@@ -16,7 +16,6 @@ class MainWrapper extends StatefulWidget {
 
 class _MainWrapperState extends State<MainWrapper> {
   @override
-  @override
   void initState() {
     super.initState();
     _setupListeners();
@@ -38,16 +37,12 @@ class _MainWrapperState extends State<MainWrapper> {
     });
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _setupListeners();
-  }
 
   int _selectedIndex = 0;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  final List<Widget> _screens = [
-    const HomeScreen(),
+  List<Widget> get _screens => [
+    HomeScreen(onMenuTap: () => _scaffoldKey.currentState?.openDrawer()),
     const CommunityRecipesScreen(),
     const AIAssistantScreen(),
     const ProfileScreen(),
@@ -55,12 +50,55 @@ class _MainWrapperState extends State<MainWrapper> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
     if (_selectedIndex >= _screens.length) {
       _selectedIndex = 0;
     }
 
     return Scaffold(
+      key: _scaffoldKey, // Add a key to open drawer
       backgroundColor: Colors.transparent,
+      drawer: Drawer(
+        backgroundColor: const Color(0xFF121212),
+        child: Column(
+          children: [
+            UserAccountsDrawerHeader(
+              decoration: const BoxDecoration(color: Color(0xFF24DC3D)),
+              currentAccountPicture: const CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Icon(Icons.person, color: Color(0xFF24DC3D)),
+              ),
+              accountName: Text(authProvider.user?.displayName ?? 'Chef Explorer'),
+              accountEmail: Text(authProvider.user?.email ?? 'chef@mealmate.com'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings, color: Colors.white),
+              title: const Text('Settings', style: TextStyle(color: Colors.white)),
+              onTap: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Settings coming soon!")),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.help_outline, color: Colors.white),
+              title: const Text('Help & Support', style: TextStyle(color: Colors.white)),
+              onTap: () => Navigator.pop(context),
+            ),
+            const Spacer(),
+            ListTile(
+              leading: const Icon(Icons.logout, color: Colors.red),
+              title: const Text('Logout', style: TextStyle(color: Colors.red)),
+              onTap: () {
+                authProvider.logout();
+                Navigator.pop(context);
+              },
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
       body: Stack(
         children: [
           // Background Image

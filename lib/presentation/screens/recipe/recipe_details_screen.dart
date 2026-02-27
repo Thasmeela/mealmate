@@ -5,6 +5,7 @@ import '../../../domain/entities/recipe.dart';
 import '../../providers/ai_provider.dart';
 import '../../providers/recipe_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../widgets/recipe_image.dart';
 
 class RecipeDetailsScreen extends StatefulWidget {
   final Recipe recipe;
@@ -62,7 +63,11 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
                       backgroundColor: Colors.white,
                       child: Icon(Icons.share, color: Colors.black),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Recipe shared successfully!")),
+                      );
+                    },
                   ),
                   Consumer<RecipeProvider>(
                     builder: (context, provider, child) {
@@ -86,11 +91,9 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
                   const SizedBox(width: 8),
                 ],
                 flexibleSpace: FlexibleSpaceBar(
-                  background: CachedNetworkImage(
+                  background: RecipeImage(
                     imageUrl: widget.recipe.image,
                     fit: BoxFit.cover,
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
                   ),
                 ),
               ),
@@ -185,32 +188,42 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
             bottom: 30,
             left: 24,
             right: 24,
-            child: Container(
-              height: 64,
-              decoration: BoxDecoration(
-                color: const Color(0xFF24DC3D),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF24DC3D).withOpacity(0.3),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
+            child: GestureDetector(
+              onTap: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Let's start cooking! Following AI steps..."),
+                    backgroundColor: Color(0xFF24DC3D),
                   ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Text(
-                    'Start Cook',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(width: 12),
-                  Icon(Icons.auto_awesome, color: Colors.white, size: 24),
-                ],
+                );
+              },
+              child: Container(
+                height: 64,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF24DC3D),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF24DC3D).withOpacity(0.3),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Text(
+                      'Start Cook',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(width: 12),
+                    Icon(Icons.auto_awesome, color: Colors.white, size: 24),
+                  ],
+                ),
               ),
             ),
           ),

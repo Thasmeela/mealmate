@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/recipe_provider.dart';
 import '../recipe/recipe_details_screen.dart';
+import '../../widgets/recipe_image.dart';
 
 class FavoritesScreen extends StatelessWidget {
   const FavoritesScreen({super.key});
@@ -106,8 +107,8 @@ class FavoritesScreen extends StatelessWidget {
                                   ClipRRect(
                                     borderRadius: const BorderRadius.horizontal(
                                         left: Radius.circular(20)),
-                                    child: Image.network(
-                                      recipe.image,
+                                    child: RecipeImage(
+                                      imageUrl: recipe.image,
                                       width: 100,
                                       height: 100,
                                       fit: BoxFit.cover,
