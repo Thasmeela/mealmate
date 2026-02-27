@@ -17,11 +17,34 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF121212), // Solid dark background
-      body: SafeArea(
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          // Background Image
+          Positioned.fill(
+            child: Image.asset(
+              'assets/download.jpg',
+              fit: BoxFit.cover,
+            ),
+          ),
+          // Dark Gradient Overlay
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.7),
+                    Colors.black.withOpacity(0.9),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          SafeArea(
             child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40),
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40),
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   return SingleChildScrollView(
@@ -35,12 +58,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             const Spacer(),
-                            Hero(
-                              tag: 'app_logo',
-                              child: Image.asset('assets/icon/MealMate.png',
-                                  height: 250, width: 250),
-                            ),
-
+                            // Logo removed as requested
+                            const SizedBox(height: 20),
                             Text(
                               'Your AI-powered culinary companion for smart recipe discovery.',
                               textAlign: TextAlign.center,
@@ -58,16 +77,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (_) =>
-                                              const SignupScreen()));
+                                          builder: (_) => const SignupScreen()));
                                 },
                                 icon: const Icon(Icons.email, size: 24),
                                 label: const Text('Sign Up with Email'),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFF24DC3D),
                                   foregroundColor: Colors.white,
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 16),
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
                                 ),
                               ),
                             ),
@@ -113,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 20), // Bottom padding
+                            const SizedBox(height: 20),
                           ],
                         ),
                       ),
@@ -121,8 +138,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   );
                 },
               ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

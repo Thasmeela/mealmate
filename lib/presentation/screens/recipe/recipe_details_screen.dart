@@ -300,7 +300,14 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
           ),
           child: Row(
             children: [
-              Image.asset('assets/icon/MealMate.png', height: 90, width: 90),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF24DC3D).withOpacity(0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.auto_awesome, color: Color(0xFF24DC3D), size: 30),
+                ),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(

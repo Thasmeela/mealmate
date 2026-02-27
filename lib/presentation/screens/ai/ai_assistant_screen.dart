@@ -28,129 +28,159 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        centerTitle: true,
-        title: Column(
-          children: const [
-            Text('MEALMATE AI',
-                style: TextStyle(
-                    fontSize: 18,
-                    color: Color(0xFF24DC3D),
-                    fontWeight: FontWeight.bold)),
-            Text('Chef Assistant',
-                style: TextStyle(fontSize: 12, color: Colors.white70)),
-          ],
-        ),
-        actions: [
-          IconButton(
-              icon: const Icon(Icons.history, color: Colors.white70),
-              onPressed: () {}),
-        ],
-      ),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 800),
-          child: Column(
-            children: [
-              Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.all(24),
-                  children: [
-                    // AI Hello
-                    _aiBubble(
-                        "Hi! I'm your healthy cooking assistant. Tell me what ingredients you have in your fridge, and I'll generate a nutritious recipe for you!"),
-                    const SizedBox(height: 24),
-                    // User input bubbles
-                    if (_ingredients.isNotEmpty)
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: _ingredients
-                              .map((ing) => _ingredientChip(ing))
-                              .toList(),
-                        ),
-                      ),
-                    const SizedBox(height: 24),
-                    // AI Response Card
-                    Consumer<AIProvider>(
-                      builder: (context, ai, child) {
-                        if (ai.isLoading) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
-                        if (ai.generatedRecipe != null) {
-                          return _richRecipeCard(ai.generatedRecipe!);
-                        }
-                        if (ai.aiResponse.isNotEmpty) {
-                          return _aiBubble(ai.aiResponse);
-                        }
-                        return const SizedBox();
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              // Input Area
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(30)),
-                  border: Border(
-                      top: BorderSide(color: Colors.white.withOpacity(0.1))),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _controller,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                          hintText: 'Enter ingredients (e.g., Tomato, Egg...)',
-                          hintStyle:
-                              TextStyle(color: Colors.white.withOpacity(0.5)),
-                          fillColor: Colors.white.withOpacity(0.1),
-                          filled: true,
-                          prefixIcon: const Icon(Icons.info_outline,
-                              color: Colors.white70),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                        onSubmitted: (_) => _addIngredient(),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    GestureDetector(
-                      onTap: () {
-                        if (_ingredients.isNotEmpty) {
-                          Provider.of<AIProvider>(context, listen: false)
-                              .generateRecipe(_ingredients);
-                        } else {
-                          _addIngredient();
-                        }
-                      },
-                      child: Container(
-                        height: 56,
-                        width: 56,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFF24DC3D),
-                          shape: BoxShape.circle,
-                        ),
-                        child:
-                            const Icon(Icons.auto_awesome, color: Colors.white),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+      body: Stack(
+        children: [
+          // Background Image
+          Positioned.fill(
+            child: Image.asset(
+              'assets/download.jpg',
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
+          // Dark Gradient Overlay
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.7),
+                    Colors.black.withOpacity(0.9),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 800),
+                child: Column(
+                  children: [
+                    AppBar(
+                      backgroundColor: Colors.transparent,
+                      elevation: 0,
+                      centerTitle: true,
+                      title: Column(
+                        children: const [
+                          Text('MEALMATE AI',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color: Color(0xFF24DC3D),
+                                  fontWeight: FontWeight.bold)),
+                          Text('Chef Assistant',
+                              style: TextStyle(fontSize: 12, color: Colors.white70)),
+                        ],
+                      ),
+                      actions: [
+                        IconButton(
+                            icon: const Icon(Icons.history, color: Colors.white70),
+                            onPressed: () {}),
+                      ],
+                    ),
+                    Expanded(
+                      child: ListView(
+                        padding: const EdgeInsets.all(24),
+                        children: [
+                          // AI Hello
+                          _aiBubble(
+                              "Hi! I'm your healthy cooking assistant. Tell me what ingredients you have in your fridge, and I'll generate a nutritious recipe for you!"),
+                          const SizedBox(height: 24),
+                          // User input bubbles
+                          if (_ingredients.isNotEmpty)
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: _ingredients
+                                    .map((ing) => _ingredientChip(ing))
+                                    .toList(),
+                              ),
+                            ),
+                          const SizedBox(height: 24),
+                          // AI Response Card
+                          Consumer<AIProvider>(
+                            builder: (context, ai, child) {
+                              if (ai.isLoading) {
+                                return const Center(
+                                    child: CircularProgressIndicator());
+                              }
+                              if (ai.generatedRecipe != null) {
+                                return _richRecipeCard(ai.generatedRecipe!);
+                              }
+                              if (ai.aiResponse.isNotEmpty) {
+                                return _aiBubble(ai.aiResponse);
+                              }
+                              return const SizedBox();
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Input Area
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        borderRadius:
+                            const BorderRadius.vertical(top: Radius.circular(30)),
+                        border: Border(
+                            top: BorderSide(color: Colors.white.withOpacity(0.1))),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _controller,
+                              style: const TextStyle(color: Colors.white),
+                              decoration: InputDecoration(
+                                hintText: 'Enter ingredients (e.g., Tomato, Egg...)',
+                                hintStyle:
+                                    TextStyle(color: Colors.white.withOpacity(0.5)),
+                                fillColor: Colors.white.withOpacity(0.1),
+                                filled: true,
+                                prefixIcon: const Icon(Icons.info_outline,
+                                    color: Colors.white70),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide: BorderSide.none,
+                                ),
+                              ),
+                              onSubmitted: (_) => _addIngredient(),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          GestureDetector(
+                            onTap: () {
+                              if (_ingredients.isNotEmpty) {
+                                Provider.of<AIProvider>(context, listen: false)
+                                    .generateRecipe(_ingredients);
+                              } else {
+                                _addIngredient();
+                              }
+                            },
+                            child: Container(
+                              height: 56,
+                              width: 56,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFF24DC3D),
+                                shape: BoxShape.circle,
+                              ),
+                              child:
+                                  const Icon(Icons.auto_awesome, color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -159,7 +189,14 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Image.asset('assets/icon/MealMate.png', height: 90, width: 90),
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: const Color(0xFF24DC3D).withOpacity(0.2),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(Icons.auto_awesome, color: Color(0xFF24DC3D), size: 30),
+        ),
         const SizedBox(width: 12),
         Expanded(
           child: Container(
