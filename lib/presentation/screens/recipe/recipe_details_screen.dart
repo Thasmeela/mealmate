@@ -189,13 +189,83 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
             left: 24,
             right: 24,
             child: GestureDetector(
-              onTap: () {
+              onTap: () async {
+                final aiProvider =
+                    Provider.of<AIProvider>(context, listen: false);
+
+                // Show loading
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text("Let's start cooking! Following AI steps..."),
+                    content: Text("AI is simplifying the steps for you..."),
                     backgroundColor: Color(0xFF24DC3D),
+                    duration: Duration(seconds: 1),
                   ),
                 );
+
+                await aiProvider.explainSteps(widget.recipe.instructions);
+
+                if (context.mounted) {
+                  showModalBottomSheet(
+                    context: context,
+                    backgroundColor: const Color(0xFF121212),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(30)),
+                    ),
+                    builder: (context) => Consumer<AIProvider>(
+                      builder: (context, ai, _) => Container(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.auto_awesome,
+                                    color: Color(0xFF24DC3D)),
+                                const SizedBox(width: 12),
+                                const Text(
+                                  "AI Chef's Advice",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                const Spacer(),
+                                IconButton(
+                                  icon: const Icon(Icons.close,
+                                      color: Colors.white70),
+                                  onPressed: () => Navigator.pop(context),
+                                )
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              ai.stepExplanation,
+                              style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 15,
+                                  height: 1.5),
+                            ),
+                            const SizedBox(height: 24),
+                            ElevatedButton(
+                              onPressed: () => Navigator.pop(context),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF24DC3D),
+                                foregroundColor: Colors.white,
+                                minimumSize: const Size(double.infinity, 50),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                              ),
+                              child: const Text("Got it!"),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }
               },
               child: Container(
                 height: 64,
@@ -304,41 +374,85 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
         }),
         const SizedBox(height: 24),
         // AI Tip Highlight
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: const Color(0xFFE8F5E9).withOpacity(0.5),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: const Color(0xFF24DC3D).withOpacity(0.1)),
-          ),
-          child: Row(
-            children: [
+        GestureDetector(
+          onTap: () async {
+            final aiProvider = Provider.of<AIProvider>(context, listen: false);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Fetching healthy tips..."),
+                duration: Duration(seconds: 1),
+              ),
+            );
+            await aiProvider.calorieTips(widget.recipe);
+
+            if (context.mounted) {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  backgroundColor: const Color(0xFF1E1E1E),
+                  title: Row(
+                    children: [
+                      const Icon(Icons.lightbulb_outline, color: Colors.yellow),
+                      const SizedBox(width: 10),
+                      const Text("Healthy Tip",
+                          style: TextStyle(color: Colors.white)),
+                    ],
+                  ),
+                  content: Consumer<AIProvider>(
+                    builder: (context, ai, _) => Text(
+                      ai.calorieTips,
+                      style: const TextStyle(color: Colors.white70),
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text("Thanks!",
+                          style: TextStyle(color: Color(0xFF24DC3D))),
+                    ),
+                  ],
+                ),
+              );
+            }
+          },
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFFE8F5E9).withOpacity(0.5),
+              borderRadius: BorderRadius.circular(20),
+              border:
+                  Border.all(color: const Color(0xFF24DC3D).withOpacity(0.1)),
+            ),
+            child: Row(
+              children: [
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: const Color(0xFF24DC3D).withOpacity(0.2),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.auto_awesome, color: Color(0xFF24DC3D), size: 30),
+                  child: const Icon(Icons.auto_awesome,
+                      color: Color(0xFF24DC3D), size: 30),
                 ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('MEALMATE AI',
-                        style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF24DC3D))),
-                    Text(
-                      'Want to know how to pick the perfect avocado for this bowl?',
-                      style: TextStyle(fontSize: 13, color: Colors.white70),
-                    ),
-                  ],
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('MEALMATE AI',
+                          style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF24DC3D))),
+                      const Text(
+                        'Want healthy tips for this meal? Tap to ask our AI!',
+                        style: TextStyle(fontSize: 13, color: Colors.white70),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ],

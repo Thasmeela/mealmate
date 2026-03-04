@@ -162,11 +162,22 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
                           const SizedBox(width: 12),
                           GestureDetector(
                             onTap: () {
-                              if (_ingredients.isNotEmpty) {
+                              if (_controller.text.isNotEmpty) {
+                                _addIngredient();
+                                // After adding, if we have ingredients, let's generate
+                                if (_ingredients.isNotEmpty) {
+                                  Provider.of<AIProvider>(context, listen: false)
+                                      .generateRecipe(_ingredients);
+                                }
+                              } else if (_ingredients.isNotEmpty) {
                                 Provider.of<AIProvider>(context, listen: false)
                                     .generateRecipe(_ingredients);
                               } else {
-                                _addIngredient();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text(
+                                          "Please enter at least one ingredient first")),
+                                );
                               }
                             },
                             child: Container(

@@ -1,21 +1,29 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import '../../data/datasources/gemini_service.dart';
+import '../../data/datasources/groq_service.dart';
+import '../../data/datasources/base_ai_service.dart';
 import '../../domain/entities/recipe.dart';
 
 class AIProvider extends ChangeNotifier {
-  final GeminiService _geminiService = GeminiService();
+  final BaseAIService _activeService = GroqService();
+
   bool _isLoading = false;
   String _aiResponse = '';
+  String _stepExplanation = '';
+  String _healthyAlternatives = '';
+  String _calorieTips = '';
   Recipe? _generatedRecipe;
 
   bool get isLoading => _isLoading;
   String get aiResponse => _aiResponse;
+  String get stepExplanation => _stepExplanation;
+  String get healthyAlternatives => _healthyAlternatives;
+  String get calorieTips => _calorieTips;
   Recipe? get generatedRecipe => _generatedRecipe;
 
   Future<void> explainSteps(List<String> steps) async {
     _setLoading(true);
-    _aiResponse = await _geminiService.explainSteps(steps);
+    _stepExplanation = await _activeService.explainSteps(steps);
     _setLoading(false);
   }
 
@@ -26,7 +34,7 @@ class AIProvider extends ChangeNotifier {
 
     try {
       final jsonString =
-          await _geminiService.generateRecipeFromIngredients(ingredients);
+          await _activeService.generateRecipeFromIngredients(ingredients);
 
       // Clean up markdown code blocks if present
       String cleanJson = jsonString;
@@ -70,19 +78,22 @@ class AIProvider extends ChangeNotifier {
   Future<void> suggestAlternatives(
       String name, List<String> ingredients) async {
     _setLoading(true);
-    _aiResponse =
-        await _geminiService.suggestHealthyAlternatives(name, ingredients);
+    _healthyAlternatives =
+        await _activeService.suggestHealthyAlternatives(name, ingredients);
     _setLoading(false);
   }
 
   Future<void> calorieTips(Recipe recipe) async {
     _setLoading(true);
-    _aiResponse = await _geminiService.getCalorieAwarenessTips(recipe);
+    _calorieTips = await _activeService.getCalorieAwarenessTips(recipe);
     _setLoading(false);
   }
 
   void clearResponse() {
     _aiResponse = '';
+    _stepExplanation = '';
+    _healthyAlternatives = '';
+    _calorieTips = '';
     _generatedRecipe = null;
     notifyListeners();
   }
