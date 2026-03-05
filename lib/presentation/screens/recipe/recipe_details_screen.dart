@@ -383,7 +383,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
                 duration: Duration(seconds: 1),
               ),
             );
-            await aiProvider.calorieTips(widget.recipe);
+            await aiProvider.getCalorieTips(widget.recipe);
 
             if (context.mounted) {
               showDialog(

@@ -83,7 +83,7 @@ class AIProvider extends ChangeNotifier {
     _setLoading(false);
   }
 
-  Future<void> calorieTips(Recipe recipe) async {
+  Future<void> getCalorieTips(Recipe recipe) async {
     _setLoading(true);
     _calorieTips = await _activeService.getCalorieAwarenessTips(recipe);
     _setLoading(false);
