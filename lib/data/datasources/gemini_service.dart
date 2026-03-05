@@ -4,9 +4,10 @@ import 'package:google_generative_ai/google_generative_ai.dart';
 import '../../domain/entities/recipe.dart';
 import 'base_ai_service.dart';
 
+import '../../core/constants/api_keys.dart';
+
 class GeminiService implements BaseAIService {
-  // TODO: Replace with your actual Gemini API Key
-  static const String _apiKey = 'AIzaSyD_5ojIOSp4Es-2OPPDSKi_MSRZlS6E-A4';
+  static const String _apiKey = ApiKeys.geminiApiKey;
 
   final GenerativeModel _model;
 
@@ -17,7 +18,7 @@ class GeminiService implements BaseAIService {
         );
 
   Future<String> explainSteps(List<String> steps) async {
-    if (_apiKey == 'AIzaSyD_5ojIOSp4Es-2OPPDSKi_MSRZlS6E-A4') {
+    if (_apiKey == 'YOUR_GEMINI_API_KEY') {
       return "Cooking is easy! Just take your time with each step. For beginners, the key is to have all ingredients prepped before you start heat. You're doing great!";
     }
     final prompt =
@@ -95,6 +96,23 @@ class GeminiService implements BaseAIService {
     } catch (e) {
       debugPrint("Gemini Error in calorie tips: $e");
       return "To keep this healthy, watch your portions and enjoy!";
+    }
+  }
+
+  @override
+  Future<String> chat(String message, {Recipe? context}) async {
+    if (_apiKey == 'YOUR_GEMINI_API_KEY') {
+       return "That's a great question! For preparation, I always recommend 'mise en place'—getting all your ingredients chopped and measured before you start the heat.";
+    }
+    
+    String contextInfo = context != null ? "Context: User is cooking ${context.name}." : "";
+    final prompt = "You are a professional chef. $contextInfo Answer this question: $message";
+    final content = [Content.text(prompt)];
+    try {
+      final response = await _model.generateContent(content);
+      return response.text ?? "I'm here to help! What's your culinary question?";
+    } catch (e) {
+      return "I'm having trouble connecting to my chef brain right now. Try again in a moment!";
     }
   }
 }

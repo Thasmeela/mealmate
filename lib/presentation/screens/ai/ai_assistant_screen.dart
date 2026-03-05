@@ -13,7 +13,9 @@ class AIAssistantScreen extends StatefulWidget {
 
 class _AIAssistantScreenState extends State<AIAssistantScreen> {
   final TextEditingController _controller = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   final List<String> _ingredients = [];
+  final List<dynamic> _chatHistory = [];
 
   void _addIngredient() {
     if (_controller.text.isNotEmpty) {
@@ -21,6 +23,74 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
         _ingredients.add(_controller.text);
         _controller.clear();
       });
+      _scrollToBottom();
+    }
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
+  Future<void> _triggerGeneration() async {
+    final text = _controller.text.trim();
+    
+    // If we have a direct question or no ingredients queued, treat as chat
+    if (_ingredients.isEmpty && text.isNotEmpty) {
+      final message = text;
+      _controller.clear();
+      setState(() {
+        _chatHistory.add([message]); // Wrap in list to show as "user bubble"
+      });
+      _scrollToBottom();
+
+      final ai = Provider.of<AIProvider>(context, listen: false);
+      final response = await ai.sendMessage(message);
+      
+      setState(() {
+        _chatHistory.add(response);
+      });
+      _scrollToBottom();
+      return;
+    }
+
+    if (text.isNotEmpty) {
+      _addIngredient();
+    }
+    
+    if (_ingredients.isNotEmpty) {
+      final prompt = List<String>.from(_ingredients);
+      setState(() {
+        _chatHistory.add(prompt);
+        _ingredients.clear();
+      });
+      _scrollToBottom();
+
+      final ai = Provider.of<AIProvider>(context, listen: false);
+      await ai.generateRecipe(prompt);
+      
+      if (ai.generatedRecipe != null) {
+        setState(() {
+          _chatHistory.add(ai.generatedRecipe!);
+        });
+      } else if (ai.aiResponse.isNotEmpty) {
+        setState(() {
+          _chatHistory.add(ai.aiResponse);
+        });
+      }
+      ai.clearResponse();
+      _scrollToBottom();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter an ingredient or ask a question!")),
+      );
     }
   }
 
@@ -80,6 +150,7 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
                               Provider.of<AIProvider>(context, listen: false).clearResponse();
                               setState(() {
                                 _ingredients.clear();
+                                _chatHistory.clear();
                               });
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text("Chat cleared")),
@@ -89,37 +160,49 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
                     ),
                     Expanded(
                       child: ListView(
+                        controller: _scrollController,
                         padding: const EdgeInsets.all(24),
                         children: [
                           // AI Hello
                           _aiBubble(
                               "Hi! I'm your healthy cooking assistant. Tell me what ingredients you have in your fridge, and I'll generate a nutritious recipe for you!"),
                           const SizedBox(height: 24),
-                          // User input bubbles
-                          if (_ingredients.isNotEmpty)
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                children: _ingredients
-                                    .map((ing) => _ingredientChip(ing))
-                                    .toList(),
-                              ),
-                            ),
-                          const SizedBox(height: 24),
-                          // AI Response Card
+                          
+                          // Chat History
+                          ...(_chatHistory ?? []).map((item) {
+                            if (item is List) {
+                              return _userIngredientsBubble(item);
+                            } else if (item is Recipe) {
+                              return Column(
+                                children: [
+                                  _richRecipeCard(item),
+                                  const SizedBox(height: 24),
+                                ],
+                              );
+                            } else if (item is String) {
+                              return Column(
+                                children: [
+                                  _aiBubble(item),
+                                  const SizedBox(height: 24),
+                                ],
+                              );
+                            }
+                            return const SizedBox();
+                          }).toList(),
+
+                          // Current User Input (Drafting)
+                          if ((_ingredients ?? []).isNotEmpty)
+                            _userIngredientsBubble(_ingredients),
+
+                          // Active loading state
                           Consumer<AIProvider>(
                             builder: (context, ai, child) {
                               if (ai.isLoading) {
-                                return const Center(
-                                    child: CircularProgressIndicator());
-                              }
-                              if (ai.generatedRecipe != null) {
-                                return _richRecipeCard(ai.generatedRecipe!);
-                              }
-                              if (ai.aiResponse.isNotEmpty) {
-                                return _aiBubble(ai.aiResponse);
+                                return const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 20),
+                                  child: Center(
+                                      child: CircularProgressIndicator(color: Color(0xFF24DC3D))),
+                                );
                               }
                               return const SizedBox();
                             },
@@ -156,30 +239,12 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
                                   borderSide: BorderSide.none,
                                 ),
                               ),
-                              onSubmitted: (_) => _addIngredient(),
+                                onSubmitted: (_) => _triggerGeneration(),
                             ),
                           ),
                           const SizedBox(width: 12),
                           GestureDetector(
-                            onTap: () {
-                              if (_controller.text.isNotEmpty) {
-                                _addIngredient();
-                                // After adding, if we have ingredients, let's generate
-                                if (_ingredients.isNotEmpty) {
-                                  Provider.of<AIProvider>(context, listen: false)
-                                      .generateRecipe(_ingredients);
-                                }
-                              } else if (_ingredients.isNotEmpty) {
-                                Provider.of<AIProvider>(context, listen: false)
-                                    .generateRecipe(_ingredients);
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text(
-                                          "Please enter at least one ingredient first")),
-                                );
-                              }
-                            },
+                             onTap: _triggerGeneration,
                             child: Container(
                               height: 56,
                               width: 56,
@@ -201,6 +266,23 @@ class _AIAssistantScreenState extends State<AIAssistantScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _userIngredientsBubble(dynamic ingredients) {
+    final List<dynamic> list = ingredients is List ? ingredients : [];
+    return Column(
+      children: [
+        Align(
+          alignment: Alignment.centerRight,
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: list.map((ing) => _ingredientChip(ing.toString())).toList(),
+          ),
+        ),
+        const SizedBox(height: 24),
+      ],
     );
   }
 

@@ -2,10 +2,12 @@ import 'dart:io';
 import 'package:cloudinary_public/cloudinary_public.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../core/constants/api_keys.dart';
+
 class CloudinaryService {
   final CloudinaryPublic _cloudinary = CloudinaryPublic(
-    'dw93u4s6s', // TODO: Replace with your Cloudinary Cloud Name
-    'ez-meal', // TODO: Replace with your Cloudinary Upload Preset
+    ApiKeys.cloudinaryCloudName, 
+    ApiKeys.cloudinaryUploadPreset,
     cache: false,
   );
 

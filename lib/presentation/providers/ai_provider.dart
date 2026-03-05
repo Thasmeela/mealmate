@@ -89,6 +89,13 @@ class AIProvider extends ChangeNotifier {
     _setLoading(false);
   }
 
+  Future<String> sendMessage(String message, {Recipe? context}) async {
+    _setLoading(true);
+    final response = await _activeService.chat(message, context: context);
+    _setLoading(false);
+    return response;
+  }
+
   void clearResponse() {
     _aiResponse = '';
     _stepExplanation = '';

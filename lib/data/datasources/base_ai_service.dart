@@ -5,4 +5,5 @@ abstract class BaseAIService {
   Future<String> generateRecipeFromIngredients(List<String> ingredients);
   Future<String> suggestHealthyAlternatives(String recipeName, List<String> ingredients);
   Future<String> getCalorieAwarenessTips(Recipe recipe);
+  Future<String> chat(String message, {Recipe? context});
 }

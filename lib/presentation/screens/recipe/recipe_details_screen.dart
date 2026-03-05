@@ -202,7 +202,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
                   ),
                 );
 
-                await aiProvider.explainSteps(widget.recipe.instructions);
+                await aiProvider.explainSteps(widget.recipe.instructions ?? []);
 
                 if (context.mounted) {
                   showModalBottomSheet(
@@ -342,7 +342,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
           ],
         ),
         const SizedBox(height: 16),
-        ...List.generate(widget.recipe.ingredients.length, (index) {
+        ...List.generate((widget.recipe.ingredients ?? []).length, (index) {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Row(
@@ -358,7 +358,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
                 const SizedBox(width: 16),
                 Expanded(
                   child: Text(
-                    widget.recipe.ingredients[index],
+                    widget.recipe.ingredients[index] ?? '',
                     style: const TextStyle(
                       fontSize: 16,
                       color: Colors.white,
@@ -371,7 +371,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
               ],
             ),
           );
-        }),
+        }).toList(),
         const SizedBox(height: 24),
         // AI Tip Highlight
         GestureDetector(
@@ -463,7 +463,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ...List.generate(widget.recipe.instructions.length, (index) {
+        ...List.generate((widget.recipe.instructions ?? []).length, (index) {
           return Padding(
             padding: const EdgeInsets.only(bottom: 24.0),
             child: Row(
@@ -481,7 +481,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
                 const SizedBox(width: 16),
                 Expanded(
                   child: Text(
-                    widget.recipe.instructions[index],
+                    widget.recipe.instructions[index] ?? '',
                     style: const TextStyle(
                         fontSize: 16, height: 1.5, color: Colors.white),
                   ),
@@ -489,7 +489,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen>
               ],
             ),
           );
-        }),
+        }).toList(),
       ],
     );
   }

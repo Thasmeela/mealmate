@@ -4,14 +4,16 @@ import 'package:http/http.dart' as http;
 import '../../domain/entities/recipe.dart';
 import 'base_ai_service.dart';
 
+import '../../core/constants/api_keys.dart';
+
 class GroqService implements BaseAIService {
-  // TODO: Replace with your actual Groq API Key
-  static const String _apiKey = '';
+  static const String _apiKey = ApiKeys.groqApiKey;
   static const String _baseUrl = 'https://api.groq.com/openai/v1/chat/completions';
   static const String _model = 'llama3-8b-8192';
 
   Future<String> _callGroq(String prompt) async {
-    if (_apiKey == '') {
+    // Only skip if the key is the literal placeholder
+    if (_apiKey == 'YOUR_GROQ_API_KEY' || _apiKey.isEmpty) {
       return "ERROR: MOCK_MODE";
     }
 
@@ -60,10 +62,11 @@ class GroqService implements BaseAIService {
   }
 
   Future<String> generateRecipeFromIngredients(List<String> ingredients) async {
+    // Only return mock if key is placeholder
     if (_apiKey == 'YOUR_GROQ_API_KEY') {
       await Future.delayed(const Duration(seconds: 2));
       return jsonEncode({
-        "name": "Healthy ${ingredients.first} Medley (Groq Demo)",
+        "name": "Healthy ${ingredients.first} Medley ",
         "ingredients": ingredients,
         "instructions": [
           "Wash the ${ingredients.first} thoroughly.",
@@ -107,5 +110,19 @@ class GroqService implements BaseAIService {
       return "This dish looks great! To keep it light, focus on portion control and use olive oil instead of butter.";
     }
     return result.isNotEmpty ? result : "To keep this healthy, watch your portions and enjoy!";
+  }
+
+  @override
+  Future<String> chat(String message, {Recipe? context}) async {
+    String systemPrompt = "You are a professional chef assistant for MealMate. Provide helpful cooking advice, preparation tips, and step-by-step suggestions.";
+    if (context != null) {
+      systemPrompt += " The user is currently looking at a recipe for ${context.name}. Ingredients: ${context.ingredients.join(', ')}.";
+    }
+
+    final result = await _callGroq(message);
+    if (result == "ERROR: MOCK_MODE") {
+      return "That's a great question! For preparation, I always recommend 'mise en place'—getting all your ingredients chopped and measured before you start the heat. What specific step of the recipe can I help you with?";
+    }
+    return result.isNotEmpty ? result : "I'm here to help with your cooking! What would you like to know about preparation?";
   }
 }
